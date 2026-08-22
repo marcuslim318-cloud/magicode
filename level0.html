@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 0 关 · 入学通知书 — 魔码学院</title>
+<meta name="description" content="魔码学院第 0 关：十分钟，在浏览器里施出你的第一道咒语，把一页麻瓜主页变成你的作品。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Ccircle cx='13' cy='13' r='11' fill='%230d0b08'/%3E%3Cpath d='M13 5 L20 17 H6 Z' stroke='%23e3b04b' stroke-width='1.5' fill='none'/%3E%3C/svg%3E">
+<meta property="og:site_name" content="魔码学院 MagiCode Academy">
+<meta property="og:title" content="一位新生施了魔法，把麻瓜主页变成了这样">
+<meta property="og:description" content="这就是 vibe coding——你说，页面变。十分钟施出你的第一道咒语：免费 · 纯浏览器 · 零安装。">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary">
+<style>
+  :root {
+    --ink: #0d0b08;
+    --ink-2: #14110c;
+    --ink-3: #1c1812;
+    --line: rgba(232, 214, 175, 0.14);
+    --line-strong: rgba(232, 214, 175, 0.28);
+    --text: #f2ead9;
+    --text-dim: #a89a7e;
+    --text-faint: #8a7c62;
+    --gold: #e3b04b;
+    --gold-soft: rgba(227, 176, 75, 0.12);
+    --paper: #f4f1ea;
+    --radius-card: 16px;
+    --font-sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+    --font-mono: ui-monospace, "Cascadia Code", Consolas, "JetBrains Mono", monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--ink); color: var(--text);
+    font-family: var(--font-sans); line-height: 1.7;
+    min-height: 100dvh; overflow-x: hidden;
+  }
+  ::selection { background: var(--gold); color: var(--ink); }
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-thumb { background: var(--ink-3); border-radius: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  a:focus-visible, button:focus-visible, input:focus-visible {
+    outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 4px;
+  }
+  .mono { font-family: var(--font-mono); }
+
+  /* ambient */
+  .sky {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(1px 1px at 12% 24%, rgba(232,214,175,.5) 50%, transparent 51%),
+      radial-gradient(1px 1px at 68% 12%, rgba(232,214,175,.35) 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 84% 38%, rgba(232,214,175,.4) 50%, transparent 51%),
+      radial-gradient(1px 1px at 32% 64%, rgba(232,214,175,.3) 50%, transparent 51%),
+      radial-gradient(1px 1px at 52% 82%, rgba(232,214,175,.35) 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 8% 78%, rgba(232,214,175,.3) 50%, transparent 51%),
+      radial-gradient(1px 1px at 92% 72%, rgba(232,214,175,.35) 50%, transparent 51%);
+  }
+  .moon {
+    position: fixed; z-index: 0; pointer-events: none;
+    width: 340px; height: 340px; border-radius: 50%;
+    background: radial-gradient(circle at 38% 34%, rgba(242,234,217,0.09), transparent 62%);
+    top: -100px; right: -80px;
+  }
+
+  /* chrome */
+  .topbar {
+    position: relative; z-index: 5;
+    display: flex; align-items: center; justify-content: space-between;
+    max-width: 1120px; margin: 0 auto; padding: 20px 24px 0;
+  }
+  .back {
+    color: var(--text-dim); text-decoration: none; font-size: 14px;
+    transition: color 0.25s ease;
+  }
+  .back:hover { color: var(--gold); }
+  .lv-tag { font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); letter-spacing: 0.18em; }
+  .progress {
+    position: relative; z-index: 5;
+    display: flex; justify-content: center; gap: 14px;
+    padding: 18px 0 0;
+  }
+  .star {
+    font-size: 13px; color: var(--text-faint); opacity: 0.55;
+    transition: color 0.4s ease, opacity 0.4s ease, transform 0.4s ease;
+  }
+  .star.lit { color: var(--gold); opacity: 1; transform: scale(1.15); }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px;
+    margin: -1px; padding: 0; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+
+  /* no-JS: the ritual needs JavaScript; never show dead controls */
+  html:not(.js) .stage, html:not(.js) .progress { display: none; }
+
+  /* stage & scenes */
+  .stage { position: relative; z-index: 1; }
+  .scene {
+    display: none;
+    max-width: 720px; margin: 0 auto; padding: 40px 24px 72px;
+    text-align: center;
+  }
+  .scene.active { display: block; animation: sceneIn 0.55s cubic-bezier(0.16, 1, 0.3, 1); }
+  .scene:focus { outline: none; }
+  @keyframes sceneIn { from { opacity: 0; transform: translateY(16px); } }
+  .narration {
+    font-size: 16.5px; color: var(--text-dim);
+    max-width: 30em; margin: 0 auto 34px;
+  }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    border-radius: 999px; text-decoration: none; font-weight: 600; cursor: pointer;
+    font-family: var(--font-sans); white-space: nowrap;
+    transition: transform 0.2s ease, background 0.25s ease, opacity 0.25s ease;
+  }
+  .btn:active { transform: translateY(1px) scale(0.98); }
+  .btn-gold { background: var(--gold); color: #17120a; padding: 14px 32px; font-size: 15.5px; border: none; }
+  .btn-gold:hover { background: #f0c263; }
+  .btn-gold[disabled] { opacity: 0.4; cursor: not-allowed; }
+  .btn-ghost {
+    border: 1px solid var(--line-strong); color: var(--text); background: transparent;
+    padding: 12px 26px; font-size: 14px;
+  }
+  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* scene 1 · letter */
+  .perch { margin-bottom: -6px; }
+  .envelope {
+    position: relative; width: 240px; height: 158px; margin: 0 auto 30px;
+    background: var(--ink-2); border: 1px solid var(--line-strong);
+    border-radius: 12px;
+    box-shadow: 0 18px 44px rgba(0,0,0,0.45), inset 0 1px 0 rgba(232,214,175,0.08);
+    animation: floaty 3.6s ease-in-out infinite;
+  }
+  @keyframes floaty { 50% { transform: translateY(-8px); } }
+  .envelope::before {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(215deg, transparent 49.5%, var(--line-strong) 50%);
+    border-radius: 12px;
+  }
+  .seal {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    width: 46px; height: 46px; border-radius: 50%;
+    background: var(--gold-soft); border: 1.5px solid var(--gold);
+    display: grid; place-items: center;
+    color: var(--gold); font-size: 19px;
+  }
+
+  /* scene 2 · quest letter */
+  .letter {
+    background: var(--ink-2); border: 1px solid var(--line-strong);
+    border-radius: var(--radius-card); padding: 36px 34px 30px;
+    text-align: left;
+    box-shadow: 0 18px 44px rgba(0,0,0,0.45), inset 0 1px 0 rgba(232,214,175,0.08);
+  }
+  .letter h1 { font-size: 24px; letter-spacing: 0.02em; margin-bottom: 6px; }
+  .letter .from { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-faint); letter-spacing: 0.14em; margin-bottom: 20px; }
+  .letter p { color: var(--text-dim); font-size: 15px; margin-bottom: 14px; }
+  .letter p strong { color: var(--text); font-weight: 600; }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 10px; }
+  .chip {
+    font-family: var(--font-mono); font-size: 13px;
+    color: var(--gold); background: var(--gold-soft);
+    border: 1px solid rgba(227,176,75,0.35);
+    border-radius: 999px; padding: 9px 17px; cursor: pointer;
+    transition: background 0.25s ease, transform 0.2s ease, border-color 0.25s ease;
+  }
+  .chip:hover { background: rgba(227,176,75,0.22); }
+  .chip:active { transform: translateY(1px) scale(0.98); }
+  .chip[aria-pressed="true"] { background: var(--gold); color: #17120a; border-color: var(--gold); font-weight: 700; }
+  @media (pointer: coarse) {
+    .chip { min-height: 44px; display: inline-flex; align-items: center; }
+  }
+  .helper { font-size: 12.5px; color: var(--text-faint); margin-bottom: 22px; }
+  .letter .actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+
+  /* scene 3 · casting */
+  .preview-frame {
+    border: 1px solid var(--line-strong); border-radius: var(--radius-card);
+    overflow: hidden; background: var(--paper); text-align: left;
+    box-shadow: 0 18px 44px rgba(0,0,0,0.45);
+  }
+  .pv-chrome { display: flex; gap: 6px; padding: 10px 14px; background: var(--ink-3); border-bottom: 1px solid var(--line); }
+  .pv-chrome span { width: 9px; height: 9px; border-radius: 50%; background: var(--line-strong); }
+  .pv-page { position: relative; padding: 26px 28px 30px; color: #3a3630; min-height: 190px; transition: background 0.7s ease, color 0.7s ease; }
+  .pv-title { font-weight: 800; font-size: clamp(19px, 3.4vw, 25px); transition: color 0.7s ease; }
+  .pv-sub { font-size: 13px; opacity: 0.65; margin-top: 4px; }
+  .pv-line { height: 6px; border-radius: 3px; background: currentColor; opacity: 0.16; margin-top: 12px; }
+  .pv-line.w60 { width: 60%; } .pv-line.w85 { width: 85%; } .pv-line.w40 { width: 40%; }
+  .pv-btn {
+    display: inline-block; margin-top: 18px; padding: 7px 18px; border-radius: 999px;
+    border: 1.5px solid currentColor; font-size: 12.5px; opacity: 0.75;
+  }
+  .pv-owl { position: absolute; right: 16px; bottom: 14px; display: none; }
+  .preview-frame.spelled-theme .pv-page { background: var(--ink-2); color: var(--text); }
+  .preview-frame.spelled-theme .pv-title { color: var(--gold); }
+  .preview-frame.spelled-theme .pv-btn { border-color: var(--gold); color: var(--gold); opacity: 1; }
+  .preview-frame.spelled-owl .pv-owl { display: block; animation: bob 2.4s ease-in-out infinite; }
+  @keyframes bob { 50% { transform: translateY(-5px); } }
+  .term-strip {
+    margin-top: 18px; background: var(--ink-2); border: 1px solid var(--line-strong);
+    border-radius: 12px; padding: 14px 18px; text-align: left;
+    font-family: var(--font-mono); font-size: 12.5px; min-height: 96px;
+  }
+  .term-strip .t-cmd::before { content: "$ "; color: var(--gold); }
+  .term-strip .t-ok::before { content: "✦ "; color: var(--gold); }
+  .term-strip div { color: var(--text-dim); margin-bottom: 5px; }
+  .term-strip .t-cmd { color: var(--text); }
+
+  /* scene 4 · level up */
+  .levelup {
+    border: 1px solid var(--gold); border-radius: var(--radius-card);
+    background: linear-gradient(160deg, rgba(227,176,75,0.1), rgba(227,176,75,0.02) 60%), var(--ink-2);
+    padding: 34px 30px 30px; text-align: left;
+    box-shadow: inset 0 1px 0 rgba(232,214,175,0.1);
+  }
+  .lu-head { font-family: var(--font-mono); color: var(--gold); letter-spacing: 0.08em; font-size: 15px; margin-bottom: 4px; }
+  .lu-xp { font-family: var(--font-mono); font-size: 34px; color: var(--gold); line-height: 1.1; margin-bottom: 18px; }
+  .rank-card {
+    display: flex; align-items: center; gap: 14px;
+    border: 1px solid var(--line-strong); border-radius: 12px;
+    padding: 14px 18px; margin-bottom: 22px; background: var(--ink);
+  }
+  .rank-badge {
+    width: 44px; height: 44px; border-radius: 50%; flex: none;
+    border: 1.5px solid var(--gold); display: grid; place-items: center;
+    color: var(--gold); font-size: 18px; background: var(--gold-soft);
+  }
+  .rank-name { font-weight: 700; font-size: 16px; }
+  .rank-note { font-size: 12.5px; color: var(--text-faint); }
+  .share-label { font-size: 13.5px; color: var(--text-dim); margin-bottom: 10px; }
+  .share-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .share-row input {
+    flex: 1 1 220px; min-width: 0;
+    background: var(--ink); border: 1px solid var(--line-strong); border-radius: 12px;
+    color: var(--text-dim); font-family: var(--font-mono); font-size: 16px;
+    padding: 11px 14px;
+  }
+  .copy-btn {
+    background: var(--gold); color: #17120a; border: none; border-radius: 999px;
+    font-weight: 700; font-size: 13.5px; padding: 11px 22px; cursor: pointer;
+    transition: background 0.25s ease, transform 0.2s ease;
+  }
+  .share-btn {
+    background: transparent; color: var(--gold); border: 1px solid var(--gold);
+    border-radius: 999px; font-weight: 700; font-size: 13.5px; padding: 11px 22px;
+    cursor: pointer; display: none;
+    transition: background 0.25s ease, transform 0.2s ease;
+  }
+  .share-btn.on { display: inline-block; }
+  .share-btn:hover { background: var(--gold-soft); }
+  .copy-btn:hover { background: #f0c263; }
+  .copy-btn:active { transform: translateY(1px) scale(0.98); }
+  .share-note { font-size: 12px; color: var(--text-faint); margin-top: 10px; }
+  .lu-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 26px; }
+  .link-btn {
+    background: none; border: none; cursor: pointer;
+    font-family: var(--font-mono); font-size: 12.5px; color: var(--text-faint);
+    padding: 8px 10px; transition: color 0.25s ease;
+  }
+  .link-btn:hover { color: var(--gold); }
+
+  /* shared viewer mode */
+  .shared { display: none; position: relative; z-index: 1; max-width: 760px; margin: 0 auto; padding: 56px 24px 90px; }
+  body.viewer .topbar, body.viewer .progress, body.viewer .stage { display: none; }
+  body.viewer .shared { display: block; }
+  .shared .badge {
+    border: 1px solid var(--gold); border-radius: var(--radius-card);
+    background: linear-gradient(160deg, rgba(227,176,75,0.1), rgba(227,176,75,0.02) 60%), var(--ink-2);
+    padding: 26px 28px; margin-bottom: 26px; text-align: center;
+  }
+  .shared .badge h1 { font-size: 21px; margin-bottom: 8px; }
+  .shared .badge p { color: var(--text-dim); font-size: 14.5px; margin-bottom: 20px; }
+  .shared .badge .row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  .noscript-note {
+    position: relative; z-index: 2; max-width: 620px; margin: 60px auto;
+    padding: 26px 30px; border: 1px solid var(--line-strong); border-radius: var(--radius-card);
+    background: var(--ink-2); color: var(--text-dim); font-size: 14.5px;
+  }
+  .noscript-note a { color: var(--gold); }
+
+  @media (max-width: 560px) {
+    .scene { padding: 28px 18px 64px; }
+    .letter { padding: 28px 22px 24px; }
+    .chip-row .chip { width: 100%; text-align: center; }
+    .envelope { width: 200px; height: 132px; }
+    .pv-page { padding: 20px 18px 24px; }
+    .lu-actions .btn { flex: 1 1 100%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+<script>document.documentElement.classList.add("js");</script>
+</head>
+<body>
+
+<!-- impeccable direction contract
+THESIS: 第 0 关是一场四幕施法仪式——访客不是在读教程，而是亲手把一页"麻瓜主页"变成自己的作品；拒绝的默认编排是分步表单向导。
+OWN-WORLD: 暗夜图书馆墨底 #0d0b08、烛金 #e3b04b、羊皮纸字色 #f2ead9；描线几何猫头鹰与 ✦ 母题贯穿；等宽字体只用于终端、数据与咒语芯片。
+STORY: 访客亲身体验"咒语（提示词）真的能改变页面，且我施的咒算数"——通关即得称号「收信人」与一个可分享的作品链接。
+FIRST VIEWPORT: 夜空满屏，几何猫头鹰立于横梁，入学信悬浮居中微光，唯一金色按钮「拆信」，四枚 ✦ 进度星在顶。
+FORM: 猫头鹰邮差场景流（concept-seed surface 轮 c73cbd1c · 第 7 候选 · THE ROLL），每幕恰好一次点击。
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance.
+-->
+
+<div class="sky" aria-hidden="true"></div>
+<div class="moon" aria-hidden="true"></div>
+
+<div class="topbar">
+  <a class="back" href="index.html">← 学院大门</a>
+  <span class="lv-tag">LEVEL 0 · 入学通知书</span>
+</div>
+
+<div class="progress" aria-live="polite">
+  <span class="star lit" aria-hidden="true">✦</span><span class="star" aria-hidden="true">✦</span><span class="star" aria-hidden="true">✦</span><span class="star" aria-hidden="true">✦</span>
+  <span class="sr-only" id="progressLabel">进度：第一幕，共四幕</span>
+</div>
+
+<noscript>
+  <div class="noscript-note">
+    这里的魔法需要一点 JavaScript 才能施展（浏览器里跑程序的小精灵）。不过欢迎信可以先读：
+    你被魔码学院录取了，第一个任务是把一页麻瓜主页变成你的样子。<br><br>
+    <a href="index.html">← 先回学院大门逛逛</a>
+  </div>
+</noscript>
+
+<main class="stage">
+
+  <!-- 幕一 · 拆信 -->
+  <section class="scene active" id="s1" aria-label="第一幕：拆信" tabindex="-1">
+    <svg class="perch" width="150" height="64" viewBox="0 0 150 64" fill="none" aria-hidden="true">
+      <path d="M4 52 H146" stroke="#8a7c62" stroke-width="1.5" stroke-linecap="round"/>
+      <g stroke="#e3b04b" stroke-width="1.7" fill="none" stroke-linecap="round">
+        <circle cx="75" cy="30" r="17"/>
+        <path d="M62 16 L68 24 M88 16 L82 24"/>
+        <circle cx="69" cy="28" r="2.2" fill="#e3b04b" stroke="none"/>
+        <circle cx="81" cy="28" r="2.2" fill="#e3b04b" stroke="none"/>
+        <path d="M75 33 L72.6 37 H77.4 Z" fill="#e3b04b" stroke="none"/>
+        <path d="M66 47 C66 41 84 41 84 47" />
+      </g>
+    </svg>
+    <div class="envelope" aria-hidden="true"><span class="seal">✦</span></div>
+    <p class="narration">一只猫头鹰穿过夜色，落在你的窗台。它从很远的地方来，爪上绑着一封给你的信。</p>
+    <button class="btn btn-gold" id="openBtn">拆信</button>
+  </section>
+
+  <!-- 幕二 · 选咒 -->
+  <section class="scene" id="s2" aria-label="第二幕：选咒" tabindex="-1">
+    <div class="letter">
+      <h1>入学通知书</h1>
+      <div class="from">魔码学院 · 招生办公室致一位麻瓜</div>
+      <p>你被魔码学院录取了。不需要任何基础——在这里，<strong>咒语就是你说的话</strong>。</p>
+      <p>你的第一个任务：下面有一页平平无奇的「麻瓜主页」。选一到三道咒语，把它变成你的样子。</p>
+      <div class="chip-row" role="group" aria-label="选择咒语，可多选">
+        <button class="chip" data-spell="theme" aria-pressed="false">午夜金 · 主题易容</button>
+        <button class="chip" data-spell="title" aria-pressed="false">标题加冕</button>
+        <button class="chip" data-spell="owl" aria-pressed="false">召唤使魔</button>
+      </div>
+      <p class="helper">至少选一道 · 可以全选 · 顺序由学院安排</p>
+      <div class="actions">
+        <button class="btn btn-gold" id="castBtn" disabled>施法</button>
+        <span class="helper" id="castHelper" style="margin:0">先选至少一道咒语</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 幕三 · 施法 -->
+  <section class="scene" id="s3" aria-label="第三幕：施法" tabindex="-1">
+    <p class="narration">咒语离手。看着这页麻瓜主页，一寸一寸变成你的样子。</p>
+    <div class="preview-frame" id="pv" role="img" aria-label="正在被改造的麻瓜主页">
+      <div class="pv-chrome" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="pv-page">
+        <div class="pv-title">麻瓜的主页</div>
+        <div class="pv-sub">这里什么都没发生过</div>
+        <div class="pv-line w85"></div>
+        <div class="pv-line w60"></div>
+        <div class="pv-line w40"></div>
+        <span class="pv-btn">一个按钮</span>
+        <svg class="pv-owl" width="42" height="42" viewBox="0 0 34 34" fill="none" aria-hidden="true">
+          <circle cx="17" cy="17" r="12" stroke="#e3b04b" stroke-width="1.6"/>
+          <path d="M9 8 L13 12 M25 8 L21 12" stroke="#e3b04b" stroke-width="1.6" stroke-linecap="round"/>
+          <circle cx="13" cy="16" r="1.6" fill="#e3b04b"/><circle cx="21" cy="16" r="1.6" fill="#e3b04b"/>
+          <path d="M17 19 L15.4 21.5 H18.6 Z" fill="#e3b04b"/>
+        </svg>
+      </div>
+    </div>
+    <div class="term-strip" id="termStrip" aria-live="polite"></div>
+    <div style="margin-top:22px">
+      <button class="btn btn-gold" id="revealBtn" hidden aria-label="显形：查看你施法完成的作品并领取奖励">显形 · 领取你的作品</button>
+      <button class="link-btn" id="editBtn" type="button">← 回去改咒</button>
+    </div>
+  </section>
+
+  <!-- 幕四 · 显形 -->
+  <section class="scene" id="s4" aria-label="第四幕：显形" tabindex="-1">
+    <div class="levelup">
+      <div class="lu-head">★ LEVEL UP · 第 0 关通过</div>
+      <div class="lu-xp" id="luXp">魔力值 +120</div>
+      <div class="rank-card">
+        <span class="rank-badge" aria-hidden="true">✦</span>
+        <div>
+          <div class="rank-name">称号获得 · 收信人</div>
+          <div class="rank-note" id="rankNote">距离下一称号「施咒学徒」还差两关</div>
+        </div>
+      </div>
+      <div class="share-label">你的第一件作品已经完成。把这个链接发给朋友，让他们看看你施法的结果：</div>
+      <div class="share-row">
+        <input type="text" id="shareUrl" readonly aria-label="你的作品链接">
+        <button class="share-btn" id="shareBtn">分享给朋友</button>
+        <button class="copy-btn" id="copyBtn">复制链接</button>
+      </div>
+      <div class="share-note">链接会打开这页被你改造后的样子 · 不上传任何数据，全部都在链接里</div>
+      <div class="lu-actions">
+        <a class="btn btn-gold" href="index.html#map">看看下一关是什么</a>
+        <button class="btn btn-ghost" id="replayBtn">再施一次</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- 分享查看模式 --><section class="shared" id="sharedView" aria-label="一份施法作品">
+  <div class="badge">
+    <h1>一位新生施了 <span id="spellCount">3</span> 道咒语，把这页麻瓜主页变成了这样</h1>
+    <p>这就是 vibe coding：你说，页面变。你也可以在十分钟内施出自己的第一道咒语。</p>
+    <div class="row">
+      <a class="btn btn-gold" href="level0.html">我也要施法 · 进入第 0 关</a>
+      <a class="btn btn-ghost" href="index.html">了解魔码学院</a>
+    </div>
+  </div>
+  <div class="preview-frame" id="sharedPv" role="img" aria-label="被咒语改造后的主页">
+    <div class="pv-chrome" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="pv-page">
+      <div class="pv-title">麻瓜的主页</div>
+      <div class="pv-sub">这里什么都没发生过</div>
+      <div class="pv-line w85"></div>
+      <div class="pv-line w60"></div>
+      <div class="pv-line w40"></div>
+      <span class="pv-btn">一个按钮</span>
+      <svg class="pv-owl" width="42" height="42" viewBox="0 0 34 34" fill="none" aria-hidden="true">
+        <circle cx="17" cy="17" r="12" stroke="#e3b04b" stroke-width="1.6"/>
+        <path d="M9 8 L13 12 M25 8 L21 12" stroke="#e3b04b" stroke-width="1.6" stroke-linecap="round"/>
+        <circle cx="13" cy="16" r="1.6" fill="#e3b04b"/><circle cx="21" cy="16" r="1.6" fill="#e3b04b"/>
+        <path d="M17 19 L15.4 21.5 H18.6 Z" fill="#e3b04b"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<script>
+(function () {
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var SPELL_ORDER = ["theme", "title", "owl"];
+  var SPELLS = {
+    theme: {
+      prompt: "把这页改成午夜金主题",
+      line: "咒语生效 · 页面沉入午夜，烛金点亮",
+      apply: function (el) { el.classList.add("spelled-theme"); }
+    },
+    title: {
+      prompt: "给标题加冕",
+      line: "标题已加冕 · 麻瓜的主页 → 大魔导师候选人的主页",
+      apply: function (el) { el.querySelector(".pv-title").textContent = "✦ 大魔导师候选人的主页"; el.querySelector(".pv-sub").textContent = "这里刚刚发生了魔法"; }
+    },
+    owl: {
+      prompt: "召唤一只使魔猫头鹰",
+      line: "使魔应召而来 · 落在页角",
+      apply: function (el) { el.classList.add("spelled-owl"); }
+    }
+  };
+
+  function applySpells(el, ids) {
+    ids.forEach(function (id) { SPELLS[id].apply(el); });
+  }
+
+  /* ---------- viewer mode ---------- */
+  var hashParams = new URLSearchParams(location.hash.replace(/^#/, ""));
+  var shareIds = (hashParams.get("p") || "").split(",").filter(function (id) {
+    return SPELL_ORDER.indexOf(id) !== -1;
+  }).filter(function (id, i, arr) {
+    return arr.indexOf(id) === i;
+  });
+  if (hashParams.get("v") === "1" && shareIds.length > 0) {
+    document.body.classList.add("viewer");
+    document.getElementById("spellCount").textContent = String(shareIds.length);
+    applySpells(document.getElementById("sharedPv"), shareIds);
+    return;
+  }
+
+  /* ---------- scene manager ---------- */
+  var scenes = Array.prototype.slice.call(document.querySelectorAll(".scene"));
+  var stars = Array.prototype.slice.call(document.querySelectorAll(".star"));
+  var progressLabel = document.getElementById("progressLabel");
+  var ACT_NAMES = ["第一幕", "第二幕", "第三幕", "第四幕"];
+  var cur = 0;
+  function go(n) {
+    scenes[cur].classList.remove("active");
+    cur = n;
+    scenes[n].classList.add("active");
+    stars.forEach(function (s, i) { s.classList.toggle("lit", i <= n); });
+    if (progressLabel) progressLabel.textContent = "进度：" + ACT_NAMES[n] + "，共四幕";
+    window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+    scenes[n].focus({ preventScroll: true });
+  }
+
+  /* ---------- scene 1 ---------- */
+  document.getElementById("openBtn").addEventListener("click", function () { go(1); });
+
+  /* ---------- scene 2 ---------- */
+  var selected = [];
+  var chips = Array.prototype.slice.call(document.querySelectorAll("#s2 .chip"));
+  var castBtn = document.getElementById("castBtn");
+  var castHelper = document.getElementById("castHelper");
+  chips.forEach(function (chip) {
+    chip.addEventListener("click", function () {
+      var id = chip.dataset.spell;
+      var on = chip.getAttribute("aria-pressed") === "true";
+      chip.setAttribute("aria-pressed", on ? "false" : "true");
+      if (on) {
+        selected = selected.filter(function (x) { return x !== id; });
+      } else {
+        selected.push(id);
+      }
+      castBtn.disabled = selected.length === 0;
+      castHelper.textContent = selected.length === 0 ? "先选至少一道咒语" : "已选 " + selected.length + " 道 · 学院会按最稳的顺序施放";
+    });
+  });
+
+  /* ---------- scene 3 ---------- */
+  var pv = document.getElementById("pv");
+  var strip = document.getElementById("termStrip");
+  var revealBtn = document.getElementById("revealBtn");
+  var editBtn = document.getElementById("editBtn");
+  var chosen = [];
+  var castSeq = 0;
+
+  function addLine(text, cls) {
+    var el = document.createElement("div");
+    el.className = cls;
+    el.textContent = text;
+    strip.appendChild(el);
+  }
+  function later(delay, fn) {
+    var seq = castSeq;
+    setTimeout(function () { if (seq === castSeq) fn(); }, delay);
+  }
+  function resetPreview() {
+    pv.className = "preview-frame";
+    pv.querySelector(".pv-title").textContent = "麻瓜的主页";
+    pv.querySelector(".pv-sub").textContent = "这里什么都没发生过";
+  }
+
+  castBtn.addEventListener("click", function () {
+    chosen = SPELL_ORDER.filter(function (id) { return selected.indexOf(id) !== -1; });
+    castSeq++;
+    go(2);
+    strip.innerHTML = "";
+    revealBtn.hidden = true;
+    resetPreview();
+    var t = 300;
+    chosen.forEach(function (id) {
+      later(t, function () { addLine('claude "' + SPELLS[id].prompt + '"', "t-cmd"); });
+      t += reduce ? 0 : 650;
+      later(t, function () {
+        addLine(SPELLS[id].line, "t-ok");
+        SPELLS[id].apply(pv);
+      });
+      t += reduce ? 0 : 750;
+    });
+    later(t + 200, function () {
+      revealBtn.hidden = false;
+      addLine("仪式完成 · 点击下方按钮显形", "t-ok");
+    });
+  });
+
+  editBtn.addEventListener("click", function () {
+    castSeq++;
+    go(1);
+  });
+
+  /* ---------- progress store ---------- */
+  var STORE_KEY = "magicode.progress.v1";
+  function loadProgress() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return null;
+      var p = JSON.parse(raw);
+      if (typeof p !== "object" || p === null) return null;
+      return {
+        xp: Number(p.xp) || 0,
+        streak: Number(p.streak) || 0,
+        lastDay: String(p.lastDay || ""),
+        level0Done: !!p.level0Done,
+        title: String(p.title || "")
+      };
+    } catch (e) { return null; }
+  }
+  function saveProgress(p) {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(p)); } catch (e) {}
+  }
+  function todayStr() {
+    var d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+
+  /* ---------- scene 4 ---------- */
+  var shareInput = document.getElementById("shareUrl");
+  var copyBtn = document.getElementById("copyBtn");
+  var shareBtn = document.getElementById("shareBtn");
+
+  revealBtn.addEventListener("click", function () {
+    var base = location.href.split("#")[0];
+    shareInput.value = base + "#v=1&p=" + chosen.join(",");
+
+    // record progress — the promise on the landing page is real
+    var prog = loadProgress() || { xp: 0, streak: 0, lastDay: "", level0Done: false, title: "" };
+    var firstTime = false;
+    var gainedXp = false;
+    var today = todayStr();
+    if (!prog.level0Done) {
+      prog.level0Done = true;
+      prog.xp += 120;
+      prog.title = "收信人";
+      firstTime = true;
+      gainedXp = true;
+    }
+    if (gainedXp) {
+      if (prog.lastDay !== today) {
+        if (prog.lastDay) {
+          var prev = new Date(prog.lastDay + "T00:00:00");
+          var now = new Date(today + "T00:00:00");
+          var diffDays = Math.round((now - prev) / 86400000);
+          prog.streak = (diffDays === 1) ? prog.streak + 1 : 1;
+        } else {
+          prog.streak = 1;
+        }
+      }
+      prog.lastDay = today;
+    }
+    saveProgress(prog);
+
+    var luXp = document.getElementById("luXp");
+    if (firstTime) {
+      luXp.textContent = "魔力值 +120";
+    } else {
+      luXp.textContent = "魔力值 " + prog.xp + " · 连击 ×" + prog.streak;
+      document.getElementById("rankNote").textContent = "第 0 关的魔力已入账 · 第 1 关见";
+    }
+
+    if (navigator.share) shareBtn.classList.add("on");
+    go(3);
+  });
+
+  shareBtn.addEventListener("click", function () {
+    navigator.share({ title: "我在魔码学院施了 " + chosen.length + " 道咒语", url: shareInput.value })
+      .catch(function () {});
+  });
+
+  copyBtn.addEventListener("click", function () {
+    var text = shareInput.value;
+    function ok() {
+      copyBtn.textContent = "复制了 ✓";
+      setTimeout(function () { copyBtn.textContent = "复制链接"; }, 1800);
+    }
+    function fail() {
+      copyBtn.textContent = "复制失败 · 请长按链接手动复制";
+      setTimeout(function () { copyBtn.textContent = "复制链接"; }, 2600);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(ok, function () {
+        fallbackCopy(text) ? ok() : fail();
+      });
+    } else {
+      fallbackCopy(text) ? ok() : fail();
+    }
+  });
+  function fallbackCopy(text) {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    var succeeded = false;
+    try { succeeded = document.execCommand("copy"); } catch (e) { succeeded = false; }
+    document.body.removeChild(ta);
+    return succeeded;
+  }
+
+  document.getElementById("replayBtn").addEventListener("click", function () {
+    castSeq++;
+    selected = [];
+    chosen = [];
+    chips.forEach(function (c) { c.setAttribute("aria-pressed", "false"); });
+    castBtn.disabled = true;
+    castHelper.textContent = "先选至少一道咒语";
+    resetPreview();
+    strip.innerHTML = "";
+    revealBtn.hidden = true;
+    go(0);
+  });
+})();
+</script>
+
+</body>
+</html>
