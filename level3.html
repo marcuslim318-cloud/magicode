@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 3 关 · 在石碑上铭刻你的第一道咒 — 魔码学院</title>
+<meta name="description" content="魔码学院第 3 关：用一句咒语（提示词）给你的第一件作品刻上一道真实的改动，在石碑上落墨。第一章收官。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Ccircle cx='13' cy='13' r='11' fill='%230d0b08'/%3E%3Cpath d='M13 5 L20 17 H6 Z' stroke='%23e3b04b' stroke-width='1.5' fill='none'/%3E%3C/svg%3E">
+<meta property="og:site_name" content="魔码学院 MagiCode Academy">
+<meta property="og:title" content="我在石碑上铭刻了第一道咒——魔码学院第一章收官">
+<meta property="og:description" content="魔码学院第 3 关：用一句咒语给已有作品刻上真实改动，晋升施咒学徒。免费 · 纯浏览器。">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary">
+<style>
+  :root {
+    --ink: #0d0b08; --ink-2: #14110c; --ink-3: #1c1812;
+    --line: rgba(232,214,175,0.14); --line-strong: rgba(232,214,175,0.28);
+    --text: #f2ead9; --text-dim: #a89a7e; --text-faint: #8a7c62;
+    --gold: #e3b04b; --gold-soft: rgba(227,176,75,0.12);
+    --rust: #b0563f; --radius-card: 16px;
+    --font-sans: "PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+    --font-mono: ui-monospace,"Cascadia Code",Consolas,"JetBrains Mono",monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--ink);color:var(--text);font-family:var(--font-sans);line-height:1.7;min-height:100dvh;overflow-x:hidden}
+  ::selection{background:var(--gold);color:var(--ink)}
+  ::-webkit-scrollbar{width:10px} ::-webkit-scrollbar-thumb{background:var(--ink-3);border-radius:5px}
+  a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px}
+  .mono{font-family:var(--font-mono)}
+  .sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  html:not(.js) .stage{display:none}
+
+  .sky{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(1px 1px at 12% 24%,rgba(232,214,175,.5) 50%,transparent 51%),radial-gradient(1px 1px at 68% 12%,rgba(232,214,175,.35) 50%,transparent 51%),radial-gradient(1.5px 1.5px at 84% 38%,rgba(232,214,175,.4) 50%,transparent 51%),radial-gradient(1px 1px at 32% 64%,rgba(232,214,175,.3) 50%,transparent 51%)}
+  .moon{position:fixed;z-index:0;pointer-events:none;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle at 38% 34%,rgba(242,234,217,0.09),transparent 62%);top:-100px;right:-80px}
+
+  .topbar{position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;max-width:1120px;margin:0 auto;padding:20px 24px 0}
+  .back{color:var(--text-dim);text-decoration:none;font-size:14px;transition:color .25s}.back:hover{color:var(--gold)}
+  .lv-tag{font-family:var(--font-mono);font-size:11px;color:var(--text-faint);letter-spacing:.18em}
+
+  .stage{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:34px 24px 90px}
+  .hero{text-align:center;padding:20px 0 10px}
+  .hero h1{font-size:clamp(24px,4vw,32px);font-weight:800;letter-spacing:.02em;margin-bottom:10px}
+  .hero .narration{font-size:15.5px;color:var(--text-dim);max-width:34em;margin:0 auto 22px}
+  .hero .narration strong{color:var(--text);font-weight:600}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;text-decoration:none;font-weight:600;cursor:pointer;font-family:var(--font-sans);white-space:nowrap;transition:transform .2s,background .25s,opacity .25s,border-color .25s,color .25s}
+  .btn:active{transform:translateY(1px) scale(0.98)}
+  .btn-gold{background:var(--gold);color:#17120a;padding:13px 30px;font-size:15px;border:none}.btn-gold:hover{background:#f0c263}
+  .btn-ghost{border:1px solid var(--line-strong);color:var(--text);background:transparent;padding:11px 24px;font-size:14px}.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+  .btn[disabled]{opacity:.4;cursor:not-allowed}
+
+  /* rune-stone */
+  .stone{display:block;margin:26px auto 8px;width:100%;max-width:560px;height:auto}
+  .rune{transition:opacity .6s ease;opacity:.06}
+  .rune.on{opacity:.85}
+  .rune.glow{filter:drop-shadow(0 0 6px rgba(227,176,75,.85))}
+
+  .chapter-tag{display:inline-block;margin:0 auto 18px;font-family:var(--font-mono);font-size:11px;color:var(--gold);letter-spacing:.2em;border:1px solid var(--line-strong);border-radius:999px;padding:6px 16px;background:var(--ink-2)}
+
+  .road{position:relative;padding-left:40px;display:flex;flex-direction:column;gap:18px;margin-top:16px}
+  .road::before{content:"";position:absolute;left:15px;top:12px;bottom:12px;border-left:1px dashed var(--line-strong)}
+  .step{position:relative}
+  .owl-node{position:absolute;left:-40px;top:20px;width:31px;height:31px;display:grid;place-items:center}
+  .owl-node .dot{width:13px;height:13px;border-radius:50%;background:var(--ink);border:2px solid var(--line-strong);transition:border-color .4s,background .4s}
+  .step.active .owl-node .dot{border-color:var(--gold);box-shadow:0 0 0 5px var(--gold-soft)}
+  .step.sealed .owl-node .dot{border-color:var(--gold);background:var(--gold)}
+  .step-card{border:1px solid var(--line);border-radius:var(--radius-card);background:var(--ink-2);padding:24px 26px;transition:border-color .35s,opacity .35s}
+  .step.locked .step-card{opacity:.45}
+  .step.active .step-card{border-color:var(--gold);box-shadow:inset 0 1px 0 rgba(232,214,175,.08),0 0 0 1px var(--gold-soft)}
+  .step.sealed .step-card{border-color:var(--line)}
+  .step-head{display:flex;align-items:baseline;gap:12px;margin-bottom:8px;flex-wrap:wrap}
+  .step-no{font-family:var(--font-mono);font-size:11px;color:var(--gold);letter-spacing:.16em}
+  .step-title{font-weight:700;font-size:17px}
+  .step-state{margin-left:auto;font-family:var(--font-mono);font-size:11px;color:var(--text-faint);letter-spacing:.12em}
+  .step.active .step-state{color:var(--gold)}
+  .step-body p{color:var(--text-dim);font-size:14.5px;margin-bottom:10px}
+  .step-body p strong{color:var(--text);font-weight:600}
+  .howto{list-style:none;margin:4px 0 16px}
+  .howto li{position:relative;padding-left:22px;color:var(--text-dim);font-size:14px;margin-bottom:7px}
+  .howto li::before{content:"✦";position:absolute;left:2px;color:var(--gold);font-size:11px;top:4px}
+  .howto li b{color:var(--text);font-weight:600}
+  .step-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .away-note{display:none;align-items:center;gap:10px;color:var(--text-dim);font-size:14px}
+  .step.away .away-note{display:inline-flex}
+  .away-note .wing{animation:bob 2s ease-in-out infinite}
+  @keyframes bob{50%{transform:translateY(-4px)}}
+
+  .spell{
+    border:1px solid var(--line-strong);border-radius:12px;background:var(--ink);
+    padding:14px 16px;margin:12px 0 4px;font-size:13.5px;color:var(--text-dim);
+  }
+  .spell .mono{color:var(--gold);font-size:13px;display:block;margin-bottom:6px;line-height:1.7}
+  .spell-note{font-size:11.5px;color:var(--text-faint);margin-bottom:14px}
+
+  .term-strip{margin-top:10px;background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:12px 16px;text-align:left;font-family:var(--font-mono);font-size:12.5px}
+  .term-strip .t-cmd::before{content:"$ ";color:var(--gold)}
+  .term-strip div{color:var(--text-dim);margin-bottom:4px}
+  .term-strip .t-cmd{color:var(--text)}
+  .term-strip .t-result{color:var(--text-faint)}
+  .term-tag{display:block;font-size:10.5px;letter-spacing:.14em;color:var(--text-faint);margin-top:6px}
+
+  .seal-panel{margin-top:34px;border:1px solid var(--line);border-radius:var(--radius-card);background:var(--ink-2);padding:28px 30px;transition:border-color .4s}
+  .seal-panel.open{border-color:var(--gold);box-shadow:inset 0 1px 0 rgba(232,214,175,.08)}
+  .seal-panel h2{font-size:19px;margin-bottom:8px}
+  .seal-panel .hint{color:var(--text-dim);font-size:14px;margin-bottom:16px}
+  .paste-row{display:flex;gap:10px;flex-wrap:wrap}
+  .paste-row input{flex:1 1 240px;min-width:0;background:var(--ink);border:1px solid var(--line-strong);border-radius:12px;color:var(--text);font-family:var(--font-mono);font-size:16px;padding:11px 14px}
+  .paste-row input::placeholder{color:var(--text-faint)}
+  .paste-msg{font-size:13px;margin-top:10px;min-height:1.4em}
+  .paste-msg.err{color:var(--rust)} .paste-msg.ok{color:var(--gold)}
+
+  .levelup{margin-top:26px;border:1px solid var(--gold);border-radius:var(--radius-card);background:linear-gradient(160deg,rgba(227,176,75,.1),rgba(227,176,75,.02) 60%),var(--ink-2);padding:30px 28px;text-align:left;box-shadow:inset 0 1px 0 rgba(232,214,175,.1)}
+  .levelup[hidden]{display:none}
+  .lu-head{font-family:var(--font-mono);color:var(--gold);letter-spacing:.08em;font-size:14px;margin-bottom:4px}
+  .lu-xp{font-family:var(--font-mono);font-size:32px;color:var(--gold);line-height:1.1;margin-bottom:16px}
+  .rank-card{display:flex;align-items:center;gap:14px;border:1px solid var(--line-strong);border-radius:12px;padding:13px 18px;margin-bottom:20px;background:var(--ink)}
+  .rank-badge{width:42px;height:42px;border-radius:50%;flex:none;border:1.5px solid var(--gold);display:grid;place-items:center;color:var(--gold);font-size:17px;background:var(--gold-soft)}
+  .rank-name{font-weight:700;font-size:15.5px}
+  .rank-note{font-size:12.5px;color:var(--text-faint)}
+  .share-label{font-size:13.5px;color:var(--text-dim);margin-bottom:10px}
+  .share-row{display:flex;gap:10px;flex-wrap:wrap}
+  .share-row input{flex:1 1 220px;min-width:0;background:var(--ink);border:1px solid var(--line-strong);border-radius:12px;color:var(--text-dim);font-family:var(--font-mono);font-size:16px;padding:11px 14px}
+  .copy-btn{background:var(--gold);color:#17120a;border:none;border-radius:999px;font-weight:700;font-size:13.5px;padding:11px 22px;cursor:pointer;transition:background .25s,transform .2s}
+  .copy-btn:hover{background:#f0c263} .copy-btn:active{transform:translateY(1px) scale(0.98)}
+  .share-note{font-size:12px;color:var(--text-faint);margin-top:10px}
+  .lu-actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:24px}
+
+  .promo{display:flex;align-items:center;gap:12px;border:1px solid var(--gold);border-radius:12px;padding:14px 18px;margin-bottom:18px;background:var(--gold-soft)}
+  .promo .pi{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--gold);display:grid;place-items:center;color:var(--gold);font-size:16px;flex:none}
+  .promo-t{font-size:14px;color:var(--text)} .promo-s{font-size:12px;color:var(--text-dim)}
+  .promo[hidden]{display:none}
+
+  .noscript-note{position:relative;z-index:2;max-width:620px;margin:60px auto;padding:26px 30px;border:1px solid var(--line-strong);border-radius:var(--radius-card);background:var(--ink-2);color:var(--text-dim);font-size:14.5px}
+  .noscript-note a{color:var(--gold)}
+
+  @media(max-width:900px){.stage{padding:26px 18px 70px}}
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+<script>document.documentElement.classList.add("js");</script>
+</head>
+<body>
+
+<!-- impeccable direction contract
+THESIS: 第 3 关把「第一件作品」当成一块石碑，用一句咒语（提示词）在它上面刻一道真实的改动——每刻一痕，石碑亮起一粒符文；三道符文点亮，第一章收官，晋升「施咒学徒」。拒绝的默认编排是带截图的图文步骤条。
+OWN-WORLD: 沿用暗夜图书馆墨底 #0d0b08、烛金 #e3b04b、羊皮纸 #f2ead9；石碑与符文是等宽线描 SVG，符文随刻痕点亮并发亮；示意终端和咒语卡带「示意演示」标注。
+STORY: 访客相信「我不是只会从零开始——我能给已有的真实作品加上只看上的一句咒语的改动」——三次刻痕（三句咒语给同一仓库改三处），贴上仓库链接得 +210 魔力值并晋升「施咒学徒」。
+FIRST VIEWPORT: 中央一块石碑，空白的线性符文阵列虚悬其上，下方唯一金色按钮「开始铭刻第一章」；三枚符文对应三次施咒。
+FORM: 石碑铭文（第 3 关结构牌，用户锁定），每道刻痕点亮一枚符文，三道全亮后开放封印凭证。
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance.
+-->
+
+<div class="sky" aria-hidden="true"></div>
+<div class="moon" aria-hidden="true"></div>
+
+<div class="topbar">
+  <a class="back" href="index.html">← 学院大门</a>
+  <span class="lv-tag">LEVEL 3 · 第一章收官</span>
+</div>
+
+<noscript>
+  <div class="noscript-note">
+    这一关需要 JavaScript 才能让符文亮起。任务本身可以先记住：<br>
+    给你的第一件作品（GitHub 仓库）用一句咒语（提示词）改一处真实的地方，改三处，第一章就收官了。<br><br>
+    <a href="index.html">← 先回学院大门逛逛</a>
+  </div>
+</noscript>
+
+<main class="stage">
+
+  <!-- 未通过第 2 关的锁屏 -->
+  <div class="noscript-note" id="lockScreen" hidden>
+    你还没完成让卷轴生长。先把时间转换器学会，再来铭刻石碑。<br><br>
+    <a class="btn btn-gold" href="level2.html">去第 2 关 · 让卷轴生长</a>
+  </div>
+
+  <header class="hero" id="heroSection">
+    <span class="chapter-tag">第一章 · 显形窗 · 收官在即</span>
+    <!-- rune stone -->
+    <svg class="stone" id="stone" viewBox="0 0 560 340" fill="none" aria-hidden="true">
+      <!-- three runes -->
+      <g id="rune1" class="rune" stroke="#e3b04b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M180,120 L130,250 L230,250 Z"/>
+        <path d="M180,120 L180,250"/>
+      </g>
+      <g id="rune2" class="rune" stroke="#e3b04b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M280,120 L250,250 H310 Z"/>
+        <path d="M270,185 H290"/>
+      </g>
+      <g id="rune3" class="rune" stroke="#e3b04b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M392,120 L392,250"/>
+        <path d="M392,120 L428,185 L392,250"/>
+      </g>
+      <!-- stone base -->
+      <ellipse cx="280" cy="285" rx="230" ry="26" stroke="#8a7c62" stroke-width="1.5" fill="none" opacity="0.4"/>
+    </svg>
+
+    <h1>在石碑上，铭刻你的第一道咒</h1>
+    <p class="narration">
+      前两关你学会了封印卷轴（commit）和让历史生长。但你把它们用过的地方，还是那样一块<strong>空白石碑</strong>。
+      现在轮到你做一件许多新手一直不敢做、也一直不会做的事：<strong>给一个已有的真实作品，施一道咒语，改一处真实的地方</strong>。
+      不需要从零开始。你只需要说一句准确的咒语，使魔（AI）会帮你把它刻进石碑。
+    </p>
+    <button class="btn btn-gold" id="startBtn">开始铭刻第一章</button>
+    <p class="mono" style="margin-top:14px;font-size:12px;color:var(--text-faint);letter-spacing:.06em">
+      免费 · 纯浏览器 · 约十五分钟 · 完成即得魔力值 +210 并与「施咒学徒」称号
+    </p>
+  </header>
+
+  <section class="road" id="taskRoad" aria-label="三道刻痕邮路">
+
+    <!-- 步骤一 · 打磨碑面 -->
+    <article class="step locked" id="step1" data-step="1">
+      <span class="owl-node" aria-hidden="true"><span class="dot"></span></span>
+      <div class="step-card">
+        <div class="step-head">
+          <span class="step-no">01</span>
+          <h2 class="step-title">打磨碑面</h2>
+          <span class="step-state mono" id="state1">未解锁</span>
+        </div>
+        <div class="step-body">
+          <p>你的石碑就是你的 <b>GitHub 仓库</b>。第一步先把它打磨干净——看清楚碑面上现在刻着什么。</p>
+          <ul class="howto">
+            <li>打开你的书匣（上一关的仓库链接）</li>
+            <li>点开 <b>README.md</b> 看看里面现在有几行字</li>
+            <li>心里想好一个你最想补上的一句：一个自我介绍、一句说明、或一个想加的角落</li>
+          </ul>
+          <p class="away-note"><span class="wing">✦</span><span>猫头鹰守在仓库页旁…想好你要刻什么后回来。</span></p>
+          <div class="step-actions">
+            <a class="btn btn-gold js-dispatch" href="https://github.com/" target="_blank" rel="noopener">放猫头鹰去仓库</a>
+            <button class="btn btn-ghost js-return" hidden>看好了 · 收回执</button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 步骤二 · 磨墨（准备咒语） -->
+    <article class="step locked" id="step2" data-step="2">
+      <span class="owl-node" aria-hidden="true"><span class="dot"></span></span>
+      <div class="step-card">
+        <div class="step-head">
+          <span class="step-no">02</span>
+          <h2 class="step-title">磨墨：准备你的咒语</h2>
+          <span class="step-state mono" id="state2">未解锁</span>
+        </div>
+        <div class="step-body">
+          <p>铭刻新符文前，先磨好墨。对零基础者，最好的咒语不是一句糊涂的「帮我改」，而是一句<strong>讲清楚要什么、给足上下文</strong>的话。</p>
+          <div class="spell">
+            <span class="mono">把下面这句话复制进你的 AI 工具（网页版即可）：</span>
+            <span class="mono">「我的仓库叫 [你的仓库名]，主要是一个学习 vibe coding 的练习仓库。请帮我在 README 里加一句真诚的介绍，告诉看我仓库的人——我正在学用 AI 做小作品，这是我的第一个练习项目。」</span>
+          </div>
+          <p class="spell-note">把 [你的仓库名] 换成真的，然后照抄。你可以在网上搜索「Claude」「ChatGPT」「DeepSeek」等任一 AI 网页工具的地址。</p>
+          <p class="away-note"><span class="wing">✦</span><span>猫头鹰把咒语叼去 AI 工具了…拿到它给你的文本后回来。</span></p>
+          <div class="step-actions">
+            <a class="btn btn-gold js-dispatch" href="https://github.com/" target="_blank" rel="noopener">带上咒语出发</a>
+            <button class="btn btn-ghost js-return" hidden>拿到咒语了 · 收回执</button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 步骤三 · 落墨刻痕 -->
+    <article class="step locked" id="step3" data-step="3">
+      <span class="owl-node" aria-hidden="true"><span class="dot"></span></span>
+      <div class="step-card">
+        <div class="step-head">
+          <span class="step-no">03</span>
+          <h2 class="step-title">落墨：把咒语刻进石碑</h2>
+          <span class="step-state mono" id="state3">未解锁</span>
+        </div>
+        <div class="step-body">
+          <p>拿到 AI 给你的文本后，把它刻进你的仓库，然后封印。</p>
+          <ul class="howto">
+            <li>回到仓库页，点 <b>README.md</b> 的铅笔图标编辑</li>
+            <li>把 AI 给你的那句介绍，粘贴进 README（可以保留原来的话）</li>
+            <li>点 <b>Commit changes</b> 两次确认——这就是你的第一道真实刻痕</li>
+          </ul>
+          <div class="term-strip" aria-hidden="true">
+            <div class="t-cmd">git commit -m "铭刻第一道咒：给石碑加了一句自我介绍"</div>
+            <div class="t-result">[main e1a2b1] 铭刻第一道咒：给石碑加了一句自我介绍</div>
+            <span class="term-tag">示意演示 · 你在网页上点按钮时，GitHub 正替你执行这句咒</span>
+          </div>
+          <p class="away-note" style="margin-top:12px"><span class="wing">✦</span><span>猫头鹰陪你在编辑页…改好、点完 Commit 后回来。</span></p>
+          <div class="step-actions" style="margin-top:14px">
+            <a class="btn btn-gold js-dispatch" href="https://github.com/" target="_blank" rel="noopener">落墨封印</a>
+            <button class="btn btn-ghost js-return" hidden>刻好了 · 收回执</button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 步骤四 · 再刻两痕 -->
+    <article class="step locked" id="step4" data-step="4">
+      <span class="owl-node" aria-hidden="true"><span class="dot"></span></span>
+      <div class="step-card">
+        <div class="step-head">
+          <span class="step-no">04</span>
+          <h2 class="step-title">再刻两痕</h2>
+          <span class="step-state mono" id="state4">未解锁</span>
+        </div>
+        <div class="step-body">
+          <p>一道刻痕只是一粒符文。要点亮三门，我们需要<strong>同样的咒语仪式再施两次</strong>——每次改一处真实的地方。</p>
+          <ul class="howto">
+            <li><b>第二道刻痕：</b>再写一句咒语给 AI，请它给 README 加一个「我学到了什么」的小节，或列上你正在学的东西</li>
+            <li><b>第三道刻痕：</b>再写一句，请它帮你在仓库里「加一个简单的说明文件」或「整理 README 的排版」，然后照例 commit 两次</li>
+            <li>三道刻痕都落墨后，你的石碑就有三粒符文亮起，第一章就此收官</li>
+          </ul>
+          <div class="term-strip" aria-hidden="true">
+            <div class="t-cmd">git commit -m "铭刻第二道咒：罗列我正在学的东西"</div>
+            <div class="t-cmd">git commit -m "铭刻第三道咒：整理石碑排版"</div>
+            <span class="term-tag">示意演示 · 每道刻痕都是一次真实 commit</span>
+          </div>
+          <p class="away-note" style="margin-top:12px"><span class="wing">✦</span><span>猫头鹰陪你完成后两道刻痕…三处都改好、都 commit 后回来。</span></p>
+          <div class="step-actions" style="margin-top:14px">
+            <a class="btn btn-gold js-dispatch" href="https://github.com/" target="_blank" rel="noopener">继续落墨</a>
+            <button class="btn btn-ghost js-return" hidden>三道刻痕都好了 · 收回执</button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </section>
+
+  <!-- 封印凭证 -->
+  <section class="seal-panel" id="sealPanel" aria-labelledby="sealTitle">
+    <h2 id="sealTitle">封印凭证</h2>
+    <p class="hint" id="sealHint">三道刻痕都落墨后，把你的书匣链接贴在这里，领取魔力值并晋升称号。链接长这样：github.com/你的用户名/仓库名</p>
+    <div class="paste-row">
+      <input type="url" id="repoUrl" placeholder="https://github.com/你的用户名/my-first-spell" aria-label="你的 GitHub 仓库链接" autocomplete="off" spellcheck="false">
+      <button class="btn btn-gold" id="sealBtn" disabled>验看封印 · 领取魔力值</button>
+    </div>
+    <p class="paste-msg" id="pasteMsg" aria-live="polite"></p>
+  </section>
+
+  <!-- LEVEL UP · 第一章收官 -->
+  <section class="levelup" id="levelup" hidden aria-labelledby="luTitle">
+    <div class="lu-head" id="luTitle">✦ 第一章 · 显形窗 · 通关</div>
+    <div class="promo" id="promoRow">
+      <div class="pi" aria-hidden="true">✦</div>
+      <div>
+        <div class="promo-t">称号晋升：收信人 →施咒学徒</div>
+        <div class="promo-s">你不只是收信人——你开始自己给作品施咒了</div>
+      </div>
+    </div>
+    <div class="lu-xp" id="luXp">魔力值 +210</div>
+    <div class="rank-card">
+      <span class="rank-badge" aria-hidden="true">✦</span>
+      <div>
+        <div class="rank-name" id="rankName">施咒学徒</div>
+        <div class="rank-note" id="rankNote">第二章解锁 · 下一称号「卷轴管理员」</div>
+      </div>
+    </div>
+    <div class="share-label">你的第一件作品现在带着三道真实刻痕。把书匣链接发给朋友看看：</div>
+    <div class="share-row">
+      <input type="text" id="shareUrl" readonly aria-label="你的作品链接">
+      <button class="copy-btn" id="copyBtn">复制链接</button>
+    </div>
+    <div class="share-note">这是一条真实的 GitHub 链接 · 你的三道刻痕全世界都能看到</div>
+    <div class="lu-actions">
+      <button class="btn btn-gold" id="toLevel4">进入第二章 · 打造门面店</button>
+      <a class="btn btn-ghost" href="index.html">回学院大门</a>
+    </div>
+  </section>
+
+</main>
+
+<script>
+(function () {
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- store ---------- */
+  var SK = "magicode.progress.v1";
+  function load() {
+    try {
+      var r = localStorage.getItem(SK);
+      if (!r) return null;
+      var p = JSON.parse(r);
+      if (typeof p !== "object" || p === null) return null;
+      return {
+        xp: Number(p.xp) || 0, streak: Number(p.streak) || 0,
+        lastDay: String(p.lastDay || ""),
+        level0Done: !!p.level0Done, level1Done: !!p.level1Done, level2Done: !!p.level2Done, level3Done: !!p.level3Done,
+        title: String(p.title || ""), repoUrl: String(p.repoUrl || "")
+      };
+    } catch (e) { return null; }
+  }
+  function save(p) { try { localStorage.setItem(SK, JSON.stringify(p)); } catch (e) {} }
+  function today() {
+    var d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+  }
+
+  var prog = load();
+  var hg = document.getElementById("stone");
+  var lockScreen = document.getElementById("lockScreen");
+  var heroSection = document.getElementById("heroSection");
+  var taskRoad = document.getElementById("taskRoad");
+  var startBtn = document.getElementById("startBtn");
+
+  /* ---------- locked out (need level2) ---------- */
+  if (!prog || !prog.level2Done) {
+    heroSection.hidden = true;
+    taskRoad.hidden = true;
+    document.getElementById("sealPanel").hidden = true;
+    lockScreen.hidden = false;
+    return;
+  }
+
+  /* ---------- returning graduate ---------- */
+  if (prog.level3Done && prog.repoUrl) {
+    document.getElementById("levelup").hidden = false;
+    var lu2 = document.getElementById("luXp");
+    lu2.textContent = "魔力值 " + prog.xp + " · 连击 ×" + prog.streak;
+    document.getElementById("rankName").textContent = prog.title || "施咒学徒";
+    document.getElementById("rankNote").textContent = "第一章已通关 · 第 4 关（第二章·打造门面店）见";
+    document.getElementById("shareUrl").value = prog.repoUrl;
+    document.getElementById("copyBtn").classList.add("on");
+    var runes = ["1","2","3"];
+    runes.forEach(function (n) { setRune(n); });
+    ["1","2","3","4"].forEach(function (n) {
+      var el = document.getElementById("step"+n);
+      el.classList.remove("locked"); el.classList.add("sealed");
+      el.querySelector(".js-dispatch").style.display = "none";
+      el.querySelector(".js-return").hidden = true;
+    });
+    startBtn.textContent = "再访石碑 · 三道刻痕已留";
+    startBtn.addEventListener("click", function () {
+      document.getElementById("levelup").scrollIntoView({ behavior: reduce?"auto":"smooth", block:"center" });
+    });
+    document.getElementById("sealPanel").classList.add("open");
+    var si = document.getElementById("repoUrl");
+    si.value = prog.repoUrl; si.readOnly = true;
+    var sb = document.getElementById("sealBtn");
+    sb.disabled = true; sb.textContent = "已入账";
+    return;
+  }
+
+  /* ---------- rune light ---------- */
+  function setRune(n, flash) {
+    var r = document.getElementById("rune"+n);
+    r.classList.add("on");
+    if (flash && !reduce) {
+      r.classList.add("glow");
+      setTimeout(function () { r.classList.remove("glow"); }, 900);
+    }
+  }
+
+  /* ---------- round-trip ---------- */
+  var steps = {};
+  ["1","2","3","4"].forEach(function (n) { steps[n] = document.getElementById("step"+n); });
+  var current = 1;
+
+  function setS(n,t){ document.getElementById("state"+n).textContent = t; }
+
+  function activate(n) {
+    current = n;
+    var el = steps[n];
+    el.classList.remove("locked"); el.classList.add("active");
+    setS(n, "待命");
+    el.querySelector(".js-return").hidden = true;
+    el.querySelector(".js-dispatch").style.display = "";
+  }
+  function dispatch(n) {
+    var el = steps[n];
+    el.classList.add("away");
+    setS(n, n==="3"||n==="4" ? "已落墨 · 猫头鹰在外" : "猫头鹰在外");
+    el.querySelector(".js-dispatch").style.display = "none";
+    el.querySelector(".js-return").hidden = false;
+    el.querySelector(".js-return").focus({ preventScroll: true });
+  }
+  function seal(n) {
+    var el = steps[n];
+    el.classList.remove("active","away"); el.classList.add("sealed");
+    setS(n, n==="4" ? "三道刻痕已成 ✓" : "已钤印 ✓");
+    el.querySelector(".js-return").hidden = true;
+    if (n === "3") setRune(1, true);
+    if (n === "4") { setRune(2, true); setRune(3, true); }
+  }
+
+  function openSeal() {
+    var panel = document.getElementById("sealPanel");
+    panel.classList.add("open");
+    var btn = document.getElementById("sealBtn");
+    var inp = document.getElementById("repoUrl");
+    btn.disabled = inp.value.trim().length === 0;
+    inp.focus({ preventScroll: true });
+  }
+
+  startBtn.addEventListener("click", function () {
+    activate(1);
+    steps[1].scrollIntoView({ behavior: reduce?"auto":"smooth", block:"center" });
+    this.blur();
+  });
+
+  ["1","2","3","4"].forEach(function (n) {
+    steps[n].querySelector(".js-dispatch").addEventListener("click", function () { dispatch(n); });
+    steps[n].querySelector(".js-return").addEventListener("click", function () {
+      seal(n);
+      var next = Number(n) + 1;
+      if (next <= 4) {
+        activate(String(next));
+        steps[String(next)].scrollIntoView({ behavior: reduce?"auto":"smooth", block:"center" });
+      } else {
+        openSeal();
+        document.getElementById("sealPanel").scrollIntoView({ behavior: reduce?"auto":"smooth", block:"center" });
+      }
+    });
+  });
+
+  /* ---------- seal ---------- */
+  var sealBtn = document.getElementById("sealBtn");
+  var urlInput = document.getElementById("repoUrl");
+  var pasteMsg = document.getElementById("pasteMsg");
+  var URL_RE = /^https?:\/\/(www\.)?github\.com\/[\w.-]+\/[\w.-]+/i;
+
+  urlInput.addEventListener("input", function () {
+    pasteMsg.textContent = ""; pasteMsg.className = "paste-msg";
+    sealBtn.disabled = urlInput.value.trim().length === 0;
+  });
+
+  sealBtn.addEventListener("click", function () {
+    var url = urlInput.value.trim();
+    if (!URL_RE.test(url)) {
+      pasteMsg.textContent = "这不像一条图书馆的地址——链接要以 github.com/ 开头，后面跟你的用户名和仓库名";
+      pasteMsg.className = "paste-msg err";
+      return;
+    }
+    pasteMsg.textContent = "封印确认 ✓";
+    pasteMsg.className = "paste-msg ok";
+
+    var p = load() || { xp:0,streak:0,lastDay:"",level0Done:false,level1Done:false,level2Done:false,level3Done:false,title:"",repoUrl:"" };
+    var firstTime = !p.level3Done;
+    var gainedXp = false;
+    if (firstTime) {
+      p.level3Done = true;
+      p.xp += 210;
+      gainedXp = true;
+      p.title = "施咒学徒";
+    }
+    p.repoUrl = url;
+    var td = today();
+    if (gainedXp) {
+      if (p.lastDay !== td) {
+        if (p.lastDay) {
+          var prev = new Date(p.lastDay+"T00:00:00");
+          var now = new Date(td+"T00:00:00");
+          var diff = Math.round((now - prev) / 86400000);
+          p.streak = (diff === 1) ? p.streak + 1 : 1;
+        } else { p.streak = 1; }
+      }
+      p.lastDay = td;
+    }
+    save(p);
+
+    var lu = document.getElementById("levelup");
+    lu.hidden = false;
+    if (firstTime) {
+      document.getElementById("luXp").textContent = "魔力值 +210";
+    } else {
+      document.getElementById("luXp").textContent = "魔力值 " + p.xp + " · 连击 ×" + p.streak;
+      document.getElementById("rankNote").textContent = "第一章已通关 · 第 4 关见";
+    }
+    document.getElementById("shareUrl").value = url;
+    document.getElementById("toLevel4").addEventListener("click", function () {
+      window.location.href = "level4.html";
+    });
+    sealBtn.disabled = true; sealBtn.textContent = "已入账";
+    urlInput.readOnly = true;
+    if (reduce) lu.scrollIntoView({ block:"center" }); else lu.scrollIntoView({ behavior:"smooth", block:"center" });
+  });
+
+  /* ---------- copy ---------- */
+  document.getElementById("copyBtn").addEventListener("click", function () {
+    var text = document.getElementById("shareUrl").value;
+    var btn = this;
+    function ok() { btn.textContent = "复制了 ✓"; setTimeout(function(){ btn.textContent = "复制链接"; }, 1800); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(ok, function(){ ok(); });
+    } else { ok(); }
+  });
+})();
+</script>
+
+</body>
+</html>
