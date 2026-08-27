@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 5 关 · 点亮永生灯 — 魔码学院</title>
+<meta name="description" content="魔码学院第 5 关：给你的网页加真实交互（按钮、切换、计数），用咒语让静态的作品活起来。第二章造物课进阶。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Ccircle cx='13' cy='13' r='11' fill='%230d0b08'/%3E%3Cpath d='M13 5 L20 17 H6 Z' stroke='%23e3b04b' stroke-width='1.5' fill='none'/%3E%3C/svg%3E">
+<meta property="og:site_name" content="魔码学院 MagiCode Academy">
+<meta property="og:title" content="我点亮了永生灯——我的网页活了，开始与人互动">
+<meta property="og:description" content="魔码学院第 5 关：用咒语给网页加真实交互，让静态作品活起来。免费 · 纯浏览器。">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary">
+<style>
+  :root {
+    --ink: #0d0b08; --ink-2: #14110c; --ink-3: #1c1812;
+    --line: rgba(232,214,175,0.14); --line-strong: rgba(232,214,175,0.28);
+    --text: #f2ead9; --text-dim: #a89a7e; --text-faint: #8a7c62;
+    --gold: #e3b04b; --gold-soft: rgba(227,176,75,0.12);
+    --rust: #b0563f; --radius-card: 16px;
+    --font-sans: "PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+    --font-mono: ui-monospace,"Cascadia Code",Consolas,"JetBrains Mono",monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--ink);color:var(--text);font-family:var(--font-sans);line-height:1.7;min-height:100dvh;overflow-x:hidden}
+  ::selection{background:var(--gold);color:var(--ink)}
+  ::-webkit-scrollbar{width:10px} ::-webkit-scrollbar-thumb{background:var(--ink-3);border-radius:5px}
+  a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px}
+  .mono{font-family:var(--font-mono)}
+  .sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  html:not(.js) .stage{display:none}
+
+  .sky{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(1px 1px at 12% 24%,rgba(232,214,175,.5) 50%,transparent 51%),radial-gradient(1px 1px at 68% 12%,rgba(232,214,175,.35) 50%,transparent 51%),radial-gradient(1.5px 1.5px at 84% 38%,rgba(232,214,175,.4) 50%,transparent 51%),radial-gradient(1px 1px at 32% 64%,rgba(232,214,175,.3) 50%,transparent 51%)}
+  .moon{position:fixed;z-index:0;pointer-events:none;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle at 38% 34%,rgba(242,234,217,0.09),transparent 62%);top:-100px;right:-80px}
+
+  .topbar{position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;max-width:1120px;margin:0 auto;padding:20px 24px 0}
+  .back{color:var(--text-dim);text-decoration:none;font-size:14px;transition:color .25s}.back:hover{color:var(--gold)}
+  .lv-tag{font-family:var(--font-mono);font-size:11px;color:var(--text-faint);letter-spacing:.18em}
+
+  .stage{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:34px 24px 90px}
+  .hero{text-align:center;padding:20px 0 10px}
+  .hero h1{font-size:clamp(24px,4vw,32px);font-weight:800;letter-spacing:.02em;margin-bottom:10px}
+  .hero .narration{font-size:15.5px;color:var(--text-dim);max-width:34em;margin:0 auto 22px}
+  .hero .narration strong{color:var(--text);font-weight:600}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;text-decoration:none;font-weight:600;cursor:pointer;font-family:var(--font-sans);white-space:nowrap;transition:transform .2s,background .25s,opacity .25s,border-color .25s,color .25s}
+  .btn:active{transform:translateY(1px) scale(0.98)}
+  .btn-gold{background:var(--gold);color:#17120a;padding:13px 30px;font-size:15px;border:none}.btn-gold:hover{background:#f0c263}
+  .btn-ghost{border:1px solid var(--line-strong);color:var(--text);background:transparent;padding:11px 24px;font-size:14px}.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+  .btn[disabled]{opacity:.4;cursor:not-allowed}
+
+  .chapter-tag{display:inline-block;margin:0 auto 18px;font-family:var(--font-mono);font-size:11px;color:var(--gold);letter-spacing:.2em;border:1px solid var(--line-strong);border-radius:999px;padding:6px 16px;background:var(--ink-2)}
+
+  /* everlasting lamp */
+  .lamp-wrap{display:flex;justify-content:center;margin:26px 0 30px}
+  .lamp-svg{width:100%;max-width:340px;height:auto}
+  .lamp-stem,.lamp-body,.lamp-base{stroke:#8a7c62;stroke-width:2;fill:none}
+  .flame{opacity:0;transition:opacity .7s ease}
+  .flame.on{opacity:1}
+  .flame.glow{filter:drop-shadow(0 0 14px rgba(227,176,75,.95));animation:flicker 1.6s ease-in-out infinite}
+  @keyframes flicker{0%,100%{opacity:1}45%{opacity:.85}60%{opacity:.95}}
+
+  .road{position:relative;padding-left:40px;display:flex;flex-direction:column;gap:18px;margin-top:16px}
+  .road::before{content:"";position:absolute;left:15px;top:12px;bottom:12px;border-left:1px dashed var(--line-strong)}
+  .step{position:relative}
+  .owl-node{position:absolute;left:-40px;top:20px;width:31px;height:31px;display:grid;place-items:center}
+  .owl-node .dot{width:13px;height:13px;border-radius:50%;background:var(--ink);border:2px solid var(--line-strong);transition:border-color .4s,background .4s}
+  .step.active .owl-node .dot{border-color:var(--gold);box-shadow:0 0 0 5px var(--gold-soft)}
+  .step.sealed .owl-node .dot{border-color:var(--gold);background:var(--gold)}
+  .step-card{border:1px solid var(--line);border-radius:var(--radius-card);background:var(--ink-2);padding:24px 26px;transition:border-color .35s,opacity .35s}
+  .step.locked .step-card{opacity:.45}
+  .step.active .step-card{border-color:var(--gold);box-shadow:inset 0 1px 0 rgba(232,214,175,.08),0 0 0 1px var(--gold-soft)}
+  .step.sealed .step-card{border-color:var(--line)}
+  .step-head{display:flex;align-items:baseline;gap:12px;margin-bottom:8px;flex-wrap:wrap}
+  .step-no{font-family:var(--font-mono);font-size:11px;color:var(--gold);letter-spacing:.16em}
+  .step-title{font-weight:700;font-size:17px}
+  .step-state{margin-left:auto;font-family:var(--font-mono);font-size:11px;color:var(--text-faint);letter-spacing:.12em}
+  .step.active .step-state{color:var(--gold)}
+  .step-body p{color:var(--text-dim);font-size:14.5px;margin-bottom:10px}
+  .step-body p strong{color:var(--text);font-weight:600}
+  .howto{list-style:none;margin:4px 0 16px}
+  .howto li{position:relative;padding-left:22px;color:var(--text-dim);font-size:14px;margin-bottom:7px}
+  .howto li::before{content:"✦";position:absolute;left:2px;color:var(--gold);font-size:11px;top:4px}
+  .howto li b{color:var(--text);font-weight:600}
+  .step-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .away-note{display:none;align-items:center;gap:10px;color:var(--text-dim);font-size:14px}
+  .step.away .away-note{display:inline-flex}
+  .away-note .wing{animation:bob 2s ease-in-out infinite}
+  @keyframes bob{50%{transform:translateY(-4px)}}
+
+  .spell{border:1px solid var(--line-strong);border-radius:12px;background:var(--ink);padding:14px 16px;margin:12px 0 4px;font-size:13.5px;color:var(--text-dim)}
+  .spell .mono{color:var(--gold);font-size:13px;display:block;margin-bottom:6px;line-height:1.7}
+  .spell-note{font-size:11.5px;color:var(--text-faint);margin-bottom:14px}
+
+  .term-strip{margin-top:10px;background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:12px 16px;text-align:left;font-family:var(--font-mono);font-size:12.5px}
+  .term-strip .t-cmd::before{content:"$ ";color:var(--gold)}
+  .term-strip div{color:var(--text-dim);margin-bottom:4px}
+  .term-strip .t-cmd{color:var(--text)}
+  .term-strip .t-result{color:var(--text-faint)}
+  .term-tag{display:block;font-size:10.5px;letter-spacing:.14em;color:var(--text-faint);margin-top:6px}
+
+  .seal-panel{margin-top:34px;border:1px solid var(--line);border-radius:var(--radius-card);background:var(--ink-2);padding:28px 30px;transition:border-color .4s}
+  .seal-panel.open{border-color:var(--gold);box-shadow:inset 0 1px 0 rgba(232,214,175,.08)}
+  .seal-panel h2{font-size:19px;margin-bottom:8px}
+  .seal-panel .hint{color:var(--text-dim);font-size:14px;margin-bottom:16px}
+  .paste-row{display:flex;gap:10px;flex-wrap:wrap}
+  .paste-row input{flex:1 1 240px;min-width:0;background:var(--ink);border:1px solid var(--line-strong);border-radius:12px;color:var(--text);font-family:var(--font-mono);font-size:16px;padding:11px 14px}
+  .paste-row input::placeholder{color:var(--text-faint)}
+  .paste-msg{font-size:13px;margin-top:10px;min-height:1.4em}
+  .paste-msg.err{color:var(--rust)} .paste-msg.ok{color:var(--gold)}
+
+  .levelup{margin-top:26px;border:1px solid var(--gold);border-radius:var(--radius-card);background:linear-gradient(160deg,rgba(227,176,75,.1),rgba(227,176,75,.02) 60%),var(--ink-2);padding:30px 28px;text-align:left;box-shadow:inset 0 1px 0 rgba(232,214,175,.1)}
+  .levelup[hidden]{display:none}
+  .lu-head{font-family:var(--font-mono);color:var(--gold);letter-spacing:.08em;font-size:14px;margin-bottom:4px}
+  .lu-xp{font-family:var(--font-mono);font-size:32px;color:var(--gold);line-height:1.1;margin-bottom:16px}
+  .rank-card{display:flex;align-items:center;gap:14px;border:1px solid var(--line-strong);border-radius:12px;padding:13px 18px;margin-bottom:20px;background:var(--ink)}
+  .rank-badge{width:42px;height:42px;border-radius:50%;flex:none;border:1.5px solid var(--gold);display:grid;place-items:center;color:var(--gold);font-size:17px;background:var(--gold-soft)}
+  .rank-name{font-weight:700;font-size:15.5px}
+  .rank-note{font-size:12.5px;color:var(--text-faint)}
+  .share-label{font-size:13.5px;color:var(--text-dim);margin-bottom:10px}
+  .share-row{display:flex;gap:10px;flex-wrap:wrap}
+  .share-row input{flex:1 1 220px;min-width:0;background:var(--ink);border:1px solid var(--line-strong);border-radius:12px;color:var(--text-dim);font-family:var(--font-mono);font-size:16px;padding:11px 14px}
+  .copy-btn{background:var(--gold);color:#17120a;border:none;border-radius:999px;font-weight:700;font-size:13.5px;padding:11px 22px;cursor:pointer;transition:background .25s,transform .2s}
+  .copy-btn:hover{background:#f0c263} .copy-btn:active{transform:translateY(1px) scale(0.98)}
+  .share-note{font-size:12px;color:var(--text-faint);margin-top:10px}
+  .lu-actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:24px}
+
+  .promo{display:flex;align-items:center;gap:12px;border:1px solid var(--gold);border-radius:12px;padding:14px 18px;margin-bottom:18px;background:var(--gold-soft)}
+  .promo .pi{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--gold);display:grid;place-items:center;color:var(--gold);font-size:16px;flex:none}
+  .promo-t{font-size:14px;color:var(--text)} .promo-s{font-size:12px;color:var(--text-dim)}
+  .promo[hidden]{display:none}
+
+  .noscript-note{position:relative;z-index:2;max-width:620px;margin:60px auto;padding:26px 30px;border:1px solid var(--line-strong);border-radius:var(--radius-card);background:var(--ink-2);color:var(--text-dim);font-size:14.5px}
+  .noscript-note a{color:var(--gold)}
+
+  @media(max-width:900px){.stage{padding:26px 18px 70px}}
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+<script>document.documentElement.classList.add("js");</script>
+</head>
+<body>
+
+<!-- impeccable direction contract
+THESIS: 第 5 关把「给网页加交互」写成点亮一盏永生灯——你的作品是一座灯台，每次用咒语加一个会变化的东西（按钮、开关、计数），灯火就旺一分；灯火共三层，三层点亮 = 作品活了。拒绝的默认编排是带截图的图文步骤条。
+OWN-WORLD: 沿用暗夜图书馆墨底 #0d0b08、烛金 #e3b04b、羊皮纸 #f2ead9；永生灯是等宽线描 SVG（灯座/灯体/灯芯），三层火焰随进度点亮并闪烁；示意终端和咒语卡带「示意演示」标注。
+STORY: 访客相信「我不只能做一个静态网页——我能让作品听懂我、回应我」——给线上作品加三种真实交互，贴回线上地址得 +270 魔力值。
+FIRST VIEWPORT: 中央一盏线描永生灯，三层火焰虚悬其上，下方唯一金色按钮「开始点亮永生灯」；每层火焰对应一种真实交互。
+FORM: 点亮永生灯（第 5 关结构牌，用户锁定），每完成一种交互点旺一层火焰，三层全旺后开放封印凭证。
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance.
+-->
+
+<div class="sky" aria-hidden="true"></div>
+<div class="moon" aria-hidden="true"></div>
+
+<div class="topbar">
+  <a class="back" href="index.html">← 学院大门</a>
+  <span class="lv-tag">LEVEL 5 · 第二章 · 造物课</span>
+</div>
+
+<noscript>
+  <div class="noscript-note">
+    这一关需要 JavaScript 才能点亮灯火。任务本身可以先记住：<br>
+    用咒语给你的线上网页加会变化的东西（按钮、切换、计数），让作品活起来。<br><br>
+    <a href="index.html">← 先回学院大门逛逛</a>
+  </div>
+</noscript>
+
+<main class="stage">
+
+  <!-- 未通过第 4 关的锁屏 -->
+  <div class="noscript-note" id="lockScreen" hidden>
+    你还没点亮你的第一张地图。先把作品做出来上线，再来点永生灯。<br><br>
+    <a class="btn btn-gold" href="level4.html">去第 4 关 · 点亮地图</a>
+  </div>
+
+  <header class="hero" id="heroSection">
+    <span class="chapter-tag">第二章 · 造物课 · 进阶</span>
+    <div class="lamp-wrap" aria-hidden="true">
+      <svg class="lamp-svg" id="lamp" viewBox="0 0 200 320" fill="none">
+        <!-- three flames -->
+        <g id="flame1" class="flame" fill="#e3b04b">
+          <path d="M100,52 C92,60 84,72 84,84 A16,16 0 0 0 116,84 C116,72 108,60 100,52 Z"/>
+        </g>
+        <g id="flame2" class="flame" fill="#e3b04b">
+          <path d="M100,40 C90,50 80,64 80,80 A20,20 0 0 0 120,80 C120,64 110,50 100,40 Z"/>
+        </g>
+        <g id="flame3" class="flame" fill="#e3b04b">
+          <path d="M100,28 C88,40 76,56 76,76 A24,24 0 0 0 124,76 C124,56 112,40 100,28 Z"/>
+        </g>
+        <!-- wick -->
+        <line x1="100" y1="100" x2="100" y2="120" stroke="#8a7c62" stroke-width="2"/>
+        <!-- lamp body -->
+        <path class="lamp-body" d="M60,120 L140,120 L128,190 L72,190 Z"/>
+        <!-- lamp base -->
+        <rect class="lamp-base" x="56" y="190" width="88" height="12" rx="4"/>
+        <rect class="lamp-base" x="46" y="202" width="108" height="8" rx="4"/>
+        <!-- stems -->
+        <path class="lamp-stem" d="M60,120 L140,120"/>
+      </svg>
+    </div>
+
+    <h1>点亮永生灯，让作品活过来</h1>
+    <p class="narration">
+      上一关你做出了一个能上线的网页。但它还像一幅画——安静、不会回应。今天你要给它装上<strong>生命</strong>：
+      一个能按的按钮、一个能切换的开关、一个会跳动的计数。用咒语让 AI 帮你把「交互」写进作品，
+      最后再上线一次。当灯芯亮起三层火焰，你的作品就不再是画，而是一个<strong>活的</strong>东西。
+    </p>
+    <button class="btn btn-gold" id="startBtn">开始点亮永生灯</button>
+    <p class="mono" style="margin-top:14px;font-size:12px;color:var(--text-faint);letter-spacing:.06em">
+      免费 · 纯浏览器 · 约二十分钟 · 完成即得魔力值 +270
+    </p>
+  </header>
+
+  <section class="road" id="taskRoad" aria-label="三步点亮灯火">
+
+    <!-- 步骤一 · 加一个按钮 -->
+    <article class="step locked" id="step1" data-step="1">
+      <span class="owl-node" aria-hidden="true"><span class="dot"></span></span>
+      <div class="step-card">
+        <div class="step-head">
+          <span class="step-no">01</span>
+          <h2 class="step-title">第一层火：加一个会动的按钮</h2>
+          <span class="step-state mono" id="state1">未解锁</span>
+        </div>
+        <div class="step-body">
+          <p>最基础也是最重要的一步：让页面里出现一个点下去会「有反应」的东西。这件事麻瓜叫「按钮 / 点击交互」，是所有活的网页的地基。</p>
+          <div class="spell">
+            <span class="mono">把下面这句粘贴给你的 AI 工具：</span>
+            <span class="mono">「请帮我在我之前那个 index.html 网页里，加一个按钮：点击它会改变页面上某个文字（比如点击后显示"你好，我是新手巫师！"）。把更新后的完整 index.html 全文给我。」</span>
+          </div>
+          <p class="spell-note">复制 AI 的全文，回仓库点 index.html 铅笔图标、全选替换、Commit changes。刷新你的线上网址，点那个按钮——它动了！</p>
+          <p class="away-note"><span class="wing">✦</span><span>猫头鹰叼着按钮飞去仓库…替换好、上线、确认按钮能动后回来。</span></p>
+          <div class="step-actions">
+            <a class="btn btn-gold js-dispatch" href="https://github.com/" target="_blank" rel="noopener">放猫头鹰去装按钮</a>
+            <button class="btn btn-ghost js-return" hidden>按钮会动了 · 收回执</button>
+          </div>
+          <div class="term-strip" aria-hidden="true" style="margin-top:14px">
+            <div class="t-cmd">git commit -m "点亮第一层火：装上一个会应的按钮"</div>
+            <span class="term-tag">示意演示 · 你在网页上操作时，GitHub 正在替你执行</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 步骤二 · 加切换 -->
+    <article class="step locked" id="step2" data-step="2">
+      <span class="owl-node" aria-hidden="true"><span class="dot"></span></span>
+      <div class="step-card">
+        <div class="step-head">
+          <span class="step-no">02</span>
+          <h2 class="step-title">第二层火：加一个能切换的开关</h2>
+          <span class="step-state mono" id="state2">未解锁</span>
+        </div>
+        <div class="step-body">
+          <p>第二层火：让作品有两个状态可以来回切——显示/隐藏某段内容、切换深色/浅色，或展开/收起一段字。这就是「开关 / 切换」。</p>
+          <div class="spell">
+            <span class="mono">把下面这句粘贴给同一个 AI：</span>
+            <span class="mono">「请再给我的 index.html 加一个可切换的功能：点击一个"显示我的秘密"的按钮，会展开/收起一段我藏的心里话。保留之前的功能。把更新后的完整 index.html 全文给我。」</span>
+          </div>
+          <p class="spell-note">替换、Commit、刷新看效果。现在你的作品有两个会动的地方了。</p>
+          <p class="away-note"><span class="wing">✦</span><span>猫头鹰带回开关…确认能来回切换后回来。</span></p>
+          <div class="step-actions">
+            <a class="btn btn-gold js-dispatch" href="https://github.com/" target="_blank" rel="noopener">放猫头鹰去装开关</a>
+            <button class="btn btn-ghost js-return" hidden>能切换了 · 收回执</button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 步骤三 · 加计数 -->
+    <article class="step locked" id="step3" data-step="3">
+      <span class="owl-node" aria-hidden="true"><span class="dot"></span></span>
+      <div class="step-card">
+        <div class="step-head">
+          <span class="step-no">03</span>
+          <h2 class="step-title">第三层火：加一个会跳动的计数</h2>
+          <span class="step-state mono" id="state3">未解锁</span>
+        </div>
+        <div class="step-body">
+          <p>第三层火：让作品「记住」并「数」——一个每次点击都 +1 的计数、或一个剩余的抽奖次数。这是「状态」的雏形，也是最接近程序员日常的一步。</p>
+          <div class="spell">
+            <span class="mono">把下面这句粘贴给同一个 AI：</span>
+            <span class="mono">「请再给我的 index.html 加一个计数器：页面上有个数字，每点一次按钮就 +1。保留之前所有功能。把更新后的完整 index.html 全文给我。」</span>
+          </div>
+          <p class="spell-note">替换、Commit、刷新，狂点几下计数看着它跳——三层火都亮了。</p>
+          <p class="away-note"><span class="wing">✦</span><span>猫头鹰陪你装好计数…确认数字会跳后回来。</span></p>
+          <div class="step-actions">
+            <a class="btn btn-gold js-dispatch" href="https://github.com/" target="_blank" rel="noopener">放猫头鹰去装计数</a>
+            <button class="btn btn-ghost js-return" hidden>计数会跳了 · 收回执</button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </section>
+
+  <!-- 封印凭证 -->
+  <section class="seal-panel" id="sealPanel" aria-labelledby="sealTitle">
+    <h2 id="sealTitle">封印凭证</h2>
+    <p class="hint" id="sealHint">三层火都点亮、作品真的会动了后，把它的线上网址贴在这里，领取魔力值。网址形如：你的用户名.github.io/仓库名/</p>
+    <div class="paste-row">
+      <input type="url" id="siteUrl" placeholder="https://你的用户名.github.io/仓库名/" aria-label="你的线上作品网址" autocomplete="off" spellcheck="false">
+      <button class="btn btn-gold" id="sealBtn" disabled>验看封印 · 领取魔力值</button>
+    </div>
+    <p class="paste-msg" id="pasteMsg" aria-live="polite"></p>
+  </section>
+
+  <!-- LEVEL UP -->
+  <section class="levelup" id="levelup" hidden aria-labelledby="luTitle">
+    <div class="lu-head" id="luTitle">✦ 第二章 · 造物课 · 进阶通过</div>
+    <div class="lu-xp" id="luXp">魔力值 +270</div>
+    <div class="rank-card">
+      <span class="rank-badge" aria-hidden="true">✦</span>
+      <div>
+        <div class="rank-name" id="rankName">称号维持 · 施咒学徒</div>
+        <div class="rank-note" id="rankNote">第二章未完 · 你的作品开始有生命了</div>
+      </div>
+    </div>
+    <div class="share-label">你的第一件作品现在会动、会应、会计数。把线上地址发给朋友：</div>
+    <div class="share-row">
+      <input type="text" id="shareUrl" readonly aria-label="你的线上作品地址">
+      <button class="copy-btn" id="copyBtn">复制链接</button>
+    </div>
+    <div class="share-note">这是一条真实的线上地址 · 打开的每个人都能跟你的作品互动</div>
+    <div class="lu-actions">
+      <a class="btn btn-gold" href="index.html#map">看看下一关是什么</a>
+      <a class="btn btn-ghost" href="index.html">回学院大门</a>
+    </div>
+  </section>
+
+</main>
+
+<script>
+(function () {
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- store ---------- */
+  var SK = "magicode.progress.v1";
+  function load() {
+    try {
+      var r = localStorage.getItem(SK);
+      if (!r) return null;
+      var p = JSON.parse(r);
+      if (typeof p !== "object" || p === null) return null;
+      return {
+        xp: Number(p.xp) || 0, streak: Number(p.streak) || 0,
+        lastDay: String(p.lastDay || ""),
+        level0Done: !!p.level0Done, level1Done: !!p.level1Done, level2Done: !!p.level2Done, level3Done: !!p.level3Done, level4Done: !!p.level4Done, level5Done: !!p.level5Done,
+        title: String(p.title || ""), repoUrl: String(p.repoUrl || ""), siteUrl: String(p.siteUrl || "")
+      };
+    } catch (e) { return null; }
+  }
+  function save(p) { try { localStorage.setItem(SK, JSON.stringify(p)); } catch (e) {} }
+  function today() {
+    var d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+  }
+
+  var prog = load();
+  var lockScreen = document.getElementById("lockScreen");
+  var heroSection = document.getElementById("heroSection");
+  var taskRoad = document.getElementById("taskRoad");
+  var startBtn = document.getElementById("startBtn");
+
+  /* ---------- locked out (need level4) ---------- */
+  if (!prog || !prog.level4Done) {
+    heroSection.hidden = true;
+    taskRoad.hidden = true;
+    document.getElementById("sealPanel").hidden = true;
+    lockScreen.hidden = false;
+    return;
+  }
+
+  /* ---------- flame light ---------- */
+  function lightFlame(n, deps) {
+    for (var i = 1; i <= n; i++) {
+      var f = document.getElementById("flame"+i);
+      f.classList.add("on");
+    }
+    if (!reduce) {
+      document.getElementById("flame"+n).classList.add("glow");
+      setTimeout(function () { document.getElementById("flame"+n).classList.remove("glow"); }, 2500);
+    }
+  }
+
+  /* ---------- returning graduate ---------- */
+  if (prog.level5Done && (prog.siteUrl || prog.repoUrl)) {
+    document.getElementById("levelup").hidden = false;
+    document.getElementById("luXp").textContent = "魔力值 " + prog.xp + " · 连击 ×" + prog.streak;
+    document.getElementById("shareUrl").value = prog.siteUrl || prog.repoUrl;
+    document.getElementById("copyBtn").classList.add("on");
+    ["1","2","3"].forEach(function (n) {
+      var f = document.getElementById("flame"+n); f.classList.add("on");
+    });
+    ["1","2","3"].forEach(function (n) {
+      var el = document.getElementById("step"+n);
+      el.classList.remove("locked"); el.classList.add("sealed");
+      el.querySelector(".js-dispatch").style.display = "none";
+      el.querySelector(".js-return").hidden = true;
+    });
+    startBtn.textContent = "再访永生灯 · 三层火已旺";
+    startBtn.addEventListener("click", function () {
+      document.getElementById("levelup").scrollIntoView({ behavior: reduce?"auto":"smooth", block:"center" });
+    });
+    document.getElementById("sealPanel").classList.add("open");
+    var si = document.getElementById("siteUrl");
+    si.value = prog.siteUrl || prog.repoUrl; si.readOnly = true;
+    var sb = document.getElementById("sealBtn");
+    sb.disabled = true; sb.textContent = "已入账";
+    return;
+  }
+
+  /* ---------- round-trip ---------- */
+  var steps = {};
+  ["1","2","3"].forEach(function (n) { steps[n] = document.getElementById("step"+n); });
+  var current = 1;
+
+  function setS(n,t){ document.getElementById("state"+n).textContent = t; }
+
+  function activate(n) {
+    current = n;
+    var el = steps[n];
+    el.classList.remove("locked"); el.classList.add("active");
+    setS(n, "待命");
+    el.querySelector(".js-return").hidden = true;
+    el.querySelector(".js-dispatch").style.display = "";
+  }
+  function dispatch(n) {
+    var el = steps[n];
+    el.classList.add("away");
+    setS(n, "猫头鹰在外");
+    el.querySelector(".js-dispatch").style.display = "none";
+    el.querySelector(".js-return").hidden = false;
+    el.querySelector(".js-return").focus({ preventScroll: true });
+  }
+  function seal(n) {
+    var el = steps[n];
+    el.classList.remove("active","away"); el.classList.add("sealed");
+    setS(n, "已点亮 ✓");
+    el.querySelector(".js-return").hidden = true;
+    lightFlame(Number(n), true);
+  }
+
+  function openSeal() {
+    var panel = document.getElementById("sealPanel");
+    panel.classList.add("open");
+    var btn = document.getElementById("sealBtn");
+    var inp = document.getElementById("siteUrl");
+    btn.disabled = inp.value.trim().length === 0;
+    inp.focus({ preventScroll: true });
+  }
+
+  startBtn.addEventListener("click", function () {
+    activate(1);
+    steps[1].scrollIntoView({ behavior: reduce?"auto":"smooth", block:"center" });
+    this.blur();
+  });
+
+  ["1","2","3"].forEach(function (n) {
+    steps[n].querySelector(".js-dispatch").addEventListener("click", function () { dispatch(n); });
+    steps[n].querySelector(".js-return").addEventListener("click", function () {
+      seal(n);
+      var next = Number(n) + 1;
+      if (next <= 3) {
+        activate(String(next));
+        steps[String(next)].scrollIntoView({ behavior: reduce?"auto":"smooth", block:"center" });
+      } else {
+        openSeal();
+        document.getElementById("sealPanel").scrollIntoView({ behavior: reduce?"auto":"smooth", block:"center" });
+      }
+    });
+  });
+
+  /* ---------- seal ---------- */
+  var sealBtn = document.getElementById("sealBtn");
+  var urlInput = document.getElementById("siteUrl");
+  var pasteMsg = document.getElementById("pasteMsg");
+  var URL_RE = /^https?:\/\/([\w.-]+\.)*[\w-]+\.(io|com|dev|app|net|org|github\.io|pages\.dev)[/:\w.-]*/i;
+
+  urlInput.addEventListener("input", function () {
+    pasteMsg.textContent = ""; pasteMsg.className = "paste-msg";
+    sealBtn.disabled = urlInput.value.trim().length === 0;
+  });
+
+  sealBtn.addEventListener("click", function () {
+    var url = urlInput.value.trim();
+    if (!URL_RE.test(url)) {
+      pasteMsg.textContent = "这看起来不像一个线上网址——应形如 你的用户名.github.io/仓库名/";
+      pasteMsg.className = "paste-msg err";
+      return;
+    }
+    pasteMsg.textContent = "封印确认 ✓";
+    pasteMsg.className = "paste-msg ok";
+
+    var p = load() || { xp:0,streak:0,lastDay:"",level0Done:false,level1Done:false,level2Done:false,level3Done:false,level4Done:false,level5Done:false,title:"",repoUrl:"",siteUrl:"" };
+    var firstTime = !p.level5Done;
+    var gainedXp = false;
+    if (firstTime) { p.level5Done = true; p.xp += 270; gainedXp = true; }
+    p.siteUrl = url;
+    var td = today();
+    if (gainedXp) {
+      if (p.lastDay !== td) {
+        if (p.lastDay) {
+          var prev = new Date(p.lastDay+"T00:00:00");
+          var now = new Date(td+"T00:00:00");
+          var diff = Math.round((now - prev) / 86400000);
+          p.streak = (diff === 1) ? p.streak + 1 : 1;
+        } else { p.streak = 1; }
+      }
+      p.lastDay = td;
+    }
+    save(p);
+
+    var lu = document.getElementById("levelup");
+    lu.hidden = false;
+    if (firstTime) {
+      document.getElementById("luXp").textContent = "魔力值 +270";
+    } else {
+      document.getElementById("luXp").textContent = "魔力值 " + p.xp + " · 连击 ×" + p.streak;
+    }
+    document.getElementById("shareUrl").value = url;
+    sealBtn.disabled = true; sealBtn.textContent = "已入账";
+    urlInput.readOnly = true;
+    if (reduce) lu.scrollIntoView({ block:"center" }); else lu.scrollIntoView({ behavior:"smooth", block:"center" });
+  });
+
+  /* ---------- copy ---------- */
+  document.getElementById("copyBtn").addEventListener("click", function () {
+    var text = document.getElementById("shareUrl").value;
+    var btn = this;
+    function ok() { btn.textContent = "复制了 ✓"; setTimeout(function(){ btn.textContent = "复制链接"; }, 1800); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(ok, function(){ ok(); });
+    } else { ok(); }
+  });
+})();
+</script>
+
+</body>
+</html>
