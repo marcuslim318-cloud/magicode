@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 8 关 · 点亮陈列殿堂 — 魔码学院</title>
+<meta name="description" content="魔码学院第 8 关：用咒语把你一路做的作品汇成一个个人主页/作品门面，让人一看便知你是谁。第二章造物课收官。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Ccircle cx='13' cy='13' r='11' fill='%230d0b08'/%3E%3Cpath d='M13 5 L20 17 H6 Z' stroke='%23e3b04b' stroke-width='1.5' fill='none'/%3E%3C/svg%3E">
+<meta property="og:site_name" content="魔码学院 MagiCode Academy">
+<meta property="og:title" content="我点亮了自己的陈列殿堂——那是我的作品门面">
+<meta property="og:description" content="魔码学院第 8 关：做一个人主页/作品门面，把自己的作品陈列给世界。免费 · 纯浏览器。">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary">
+<style>
+  :root {
+    --ink: #0d0b08; --ink-2: #14110c; --ink-3: #1c1812;
+    --line: rgba(232,214,175,0.14); --line-strong: rgba(232,214,175,0.28);
+    --text: #f2ead9; --text-dim: #a89a7e; --text-faint: #8a7c62;
+    --gold: #e3b04b; --gold-soft: rgba(227,176,75,0.12);
+    --rust: #b0563f; --radius-card: 16px;
+    --font-sans: "PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+    --font-mono: ui-monospace,"Cascadia Code",Consolas,"JetBrains Mono",monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--ink);color:var(--text);font-family:var(--font-sans);line-height:1.7;min-height:100dvh;overflow-x:hidden}
+  ::selection{background:var(--gold);color:var(--ink)}
+  ::-webkit-scrollbar{width:10px} ::-webkit-scrollbar-thumb{background:var(--ink-3);border-radius:5px}
+  a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px}
+  .mono{font-family:var(--font-mono)}
+  html:not(.js) .stage{display:none}
+
+  .sky{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(1px 1px at 12% 24%,rgba(232,214,175,.5) 50%,transparent 51%),radial-gradient(1px 1px at 68% 12%,rgba(232,214,175,.35) 50%,transparent 51%),radial-gradient(1.5px 1.5px at 84% 38%,rgba(232,214,175,.4) 50%,transparent 51%),radial-gradient(1px 1px at 32% 64%,rgba(232,214,175,.3) 50%,transparent 51%),radial-gradient(1px 1px at 55% 82%,rgba(232,214,175,.35) 50%,transparent 51%)}
+  .moon{position:fixed;z-index:0;pointer-events:none;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle at 38% 34%,rgba(242,234,217,0.09),transparent 62%);top:-100px;right:-80px}
+
+  .topbar{position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;max-width:1120px;margin:0 auto;padding:20px 24px 0}
+  .back{color:var(--text-dim);text-decoration:none;font-size:14px;transition:color .25s}.back:hover{color:var(--gold)}
+  .lv-tag{font-family:var(--font-mono);font-size:11px;color:var(--text-faint);letter-spacing:.18em}
+
+  .stage{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:34px 24px 90px}
+  .hero{text-align:center;padding:20px 0 10px}
+  .hero h1{font-size:clamp(24px,4vw,32px);font-weight:800;letter-spacing:.02em;margin-bottom:10px}
+  .hero .narration{font-size:15.5px;color:var(--text-dim);max-width:36em;margin:0 auto 22px}
+  .hero .narration strong{color:var(--text);font-weight:600}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;text-decoration:none;font-weight:600;cursor:pointer;font-family:var(--font-sans);white-space:nowrap;transition:transform .2s,background .25s,opacity .25s,border-color .25s,color .25s}
+  .btn:active{transform:translateY(1px) scale(0.98)}
+  .btn-gold{background:var(--gold);color:#17120a;padding:13px 30px;font-size:15px;border:none}.btn-gold:hover{background:#f0c263}
+  .btn-ghost{border:1px solid var(--line-strong);color:var(--text);background:transparent;padding:11px 24px;font-size:14px}.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+  .btn[disabled]{opacity:.4;cursor:not-allowed}
+
+  .chapter-tag{display:inline-block;margin:0 auto 18px;font-family:var(--font-mono);font-size:11px;color:var(--gold);letter-spacing:.2em;border:1px solid var(--line-strong);border-radius:999px;padding:6px 16px;background:var(--ink-2)}
+
+  /* hall of exhibits */
+  .hall-wrap{display:flex;justify-content:center;margin:22px 0 30px}
+  .hall-svg{width:100%;max-width:330px;height:auto}
+  .hall-outline{stroke:#8a7c62;fill:none}
+  .wall{fill:#e3b04b;opacity:0;transition:opacity .8s ease}
+  .wall.on{opacity:1}
+  .painting{opacity:0;transition:opacity .8s ease}
+  .painting.on{opacity:1}
+  .pedestal{stroke:#8a7c62;fill:none}
+  .lantern{opacity:0;transition:opacity .8s ease}
+  .lantern.on{opacity:1}
+
+  .road{position:relative;padding-left:40px;display:flex;flex-direction:column;gap:18px;margin-top:16px}
+  .road::before{content:"";position:absolute;left:15px;top:12px;bottom:12px;border-left:1px dashed var(--line-strong)}
+  .step{position:relative}
+  .owl-node{position:absolute;left:-40px;top:20px;width:31px;height:31px;display:grid;place-items:center}
+  .owl-node .dot{width:13px;height:13px;border-radius:50%;background:var(--ink);border:2px solid var(--line-strong);transition:border-color .4s,background .4s}
+  .step.active .owl-node .dot{border-color:var(--gold);box-shadow:0 0 0 5px var(--gold-soft)}
+  .step.sealed .owl-node .dot{border-color:var(--gold);background:var(--gold)}
+  .step-card{border:1px solid var(--line);border-radius:var(--radius-card);background:var(--ink-2);padding:24px 26px;transition:border-color .35s,opacity .35s}
+  .step.locked .step-card{opacity:.45}
+  .step.active .step-card{border-color:var(--gold);box-shadow:inset 0 1px 0 rgba(232,214,175,.08),0 0 0 1px var(--gold-soft)}
+  .step.sealed .step-card{border-color:var(--line)}
+  .step-head{display:flex;align-items:baseline;gap:12px;margin-bottom:8px;flex-wrap:wrap}
+  .step-no{font-family:var(--font-mono);font-size:11px;color:var(--gold);letter-spacing:.16em}
+  .step-title{font-weight:700;font-size:17px}
+  .step-state{margin-left:auto;font-family:var(--font-mono);font-size:11px;color:var(--text-faint);letter-spacing:.12em}
+  .step.active .step-state{color:var(--gold)}
+  .step-body p{color:var(--text-dim);font-size:14.5px;margin-bottom:10px}
+  .step-body p strong{color:var(--text);font-weight:600}
+  .howto{list-style:none;margin:4px 0 16px}
+  .howto li{position:relative;padding-left:22px;color:var(--text-dim);font-size:14px;margin-bottom:7px}
+  .howto li::before{content:"✦";position:absolute;left:2px;color:var(--gold);font-size:11px;top:4px}
+  .howto li b{color:var(--text);font-weight:600}
+  .step-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .away-note{display:none;align-items:center;gap:10px;color:var(--text-dim);font-size:14px}
+  .step.away .away-note{display:inline-flex}
+  .away-note .wing{animation:bob 2s ease-in-out infinite}
+  @keyframes bob{50%{transform:translateY(-4px)}}
+
+  .spell{border:1px solid var(--line-strong);border-radius:12px;background:var(--ink);padding:14px 16px;margin:12px 0 4px;font-size:13.5px;color:var(--text-dim)}
+  .spell .mono{color:var(--gold);font-size:13px;display:block;margin-bottom:6px;line-height:1.7}
+  .spell-note{font-size:11.5px;color:var(--text-faint);margin-bottom:14px}
+
+  .term-strip{margin-top:10px;background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:12px 16px;text-align:left;font-family:var(--font-mono);font-size:12.5px}
+  .term-strip .t-cmd::before{content:"$ ";color:var(--gold)}
+  .term-strip div{color:var(--text-dim);margin-bottom:4px}
+  .term-strip .t-cmd{color:var(--text)}
+  .term-strip .t-result{color:var(--text-faint)}
+  .term-tag{display:block;font-size:10.5px;letter-spacing:.14em;color:var(--text-faint);margin-top:6px}
+
+  .seal-panel{margin-top:34px;border:1px solid var(--line);border-radius:var(--radius-card);background:var(--ink-2);padding:28px 30px;transition:border-color .4s}
+  .seal-panel.open{border-color:var(--gold);box-shadow:inset 0 1px 0 rgba(232,214,175,.08)}
+  .seal-panel h2{font-size:19px;margin-bottom:8px}
+  .seal-panel .hint{color:var(--text-dim);font-size:14px;margin-bottom:16px}
+  .paste-row{display:flex;gap:10px;flex-wrap:wrap}
+  .paste-row input{flex:1 1 240px;min-width:0;background:var(--ink);border:1px solid var(--line-strong);border-radius:12px;color:var(--text);font-family:var(--font-mono);font-size:16px;padding:11px 14px}
+  .paste-row input::placeholder{color:var(--text-faint)}
+  .paste-msg{font-size:13px;margin-top:10px;min-height:1.4em}
+  .paste-msg.err{color:var(--rust)} .paste-msg.ok{color:var(--gold)}
+
+  .levelup{margin-top:26px;border:1px solid var(--gold);border-radius:var(--radius-card);background:linear-gradient(160deg,rgba(227,176,75,.1),rgba(227,176,75,.02) 60%),var(--ink-2);padding:30px 28px;text-align:left;box-shadow:inset 0 1px 0 rgba(232,214,175,.1)}
+  .levelup[hidden]{display:none}
+  .lu-head{font-family:var(--font-mono);color:var(--gold);letter-spacing:.08em;font-size:14px;margin-bottom:4px}
+  .lu-xp{font-family:var(--font-mono);font-size:32px;color:var(--gold);line-height:1.1;margin-bottom:16px}
+  .rank-card{display:flex;align-items:center;gap:14px;border:1px solid var(--line-strong);border-radius:12px;padding:13px 18px;margin-bottom:20px;background:var(--ink)}
+  .rank-badge{width:42px;height:42px;border-radius:50%;flex:none;border:1.5px solid var(--gold);display:grid;place-items:center;color:var(--gold);font-size:17px;background:var(--gold-soft)}
+  .rank-name{font-weight:700;font-size:15.5px}
+  .rank-note{font-size:12.5px;color:var(--text-faint)}
+  .share-label{font-size:13.5px;color:var(--text-dim);margin-bottom:10px}
+  .share-row{display:flex;gap:10px;flex-wrap:wrap}
+  .share-row input{flex:1 1 220px;min-width:0;background:var(--ink);border:1px solid var(--line-strong);border-radius:12px;color:var(--text-dim);font-family:var(--font-mono);font-size:16px;padding:11px 14px}
+  .copy-btn{background:var(--gold);color:#17120a;border:none;border-radius:999px;font-weight:700;font-size:13.5px;padding:11px 22px;cursor:pointer;transition:background .25s,transform .2s}
+  .copy-btn:hover{background:#f0c263} .copy-btn:active{transform:translateY(1px) scale(0.98)}
+  .share-note{font-size:12px;color:var(--text-faint);margin-top:10px}
+  .lu-actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:24px}
+
+  .noscript-note{position:relative;z-index:2;max-width:620px;margin:60px auto;padding:26px 30px;border:1px solid var(--line-strong);border-radius:var(--radius-card);background:var(--ink-2);color:var(--text-dim);font-size:14.5px}
+  .noscript-note a{color:var(--gold)}
+
+  @media(max-width:900px){.stage{padding:26px 18px 70px}}
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+<script>document.documentElement.classList.add("js");</script>
+</head>
+<body>
+
+<!-- impeccable direction contract
+THESIS: 第 8 关把「做一个人主页/作品门面」写成点亮一座陈列殿堂——你一路做的作品被挂进这座殿堂，殿灯随陈列逐盏点亮，别人一进门就知道你是谁。拒绝的默认编排是带截图的图文步骤条。
+OWN-WORLD: 沿用暗夜图书馆墨底 #0d0b08、烛金 #e3b04b、羊皮纸 #f2ead9；殿堂是轮廓线描 SVG（柱廊/山墙/墙上画作/地面基座），每挂一件作品亮一盏殿灯点亮一面墙上的画；示意终端和咒语卡带「示意演示」标注。
+STORY: 访客相信「我做的作品值得被看见」——做一个作品门面主页，把自己做的网页陈列进去，贴回线上地址得 +360 魔力值。
+FIRST VIEWPORT: 中央一座轮廓陈列殿堂，墙上三块画位空着，下方唯一金色按钮「开始点亮陈列殿堂」；每挂一件作品亮起一面墙的画。
+FORM: 点亮陈列殿堂（第 8 关结构牌，用户锁定），每陈列一件作品点亮一面墙，三件挂齐后开放封印凭证。
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance.
+-->
+
+<div class="sky" aria-hidden="true"></div>
+<div class="moon" aria-hidden="true"></div>
+
+<div class="topbar">
+  <a class="back" href="index.html">← 学院大门</a>
+  <span class="lv-tag">LEVEL 8 · 第二章 · 造物课 · 收官</span>
+</div>
+
+<noscript>
+  <div class="noscript-note">
+    这一关需要 JavaScript 才能点亮殿堂。任务本身可以先记住：<br>
+    用咒语做一个人主页/作品门面，把自己一路做的网页陈列进去。<br><br>
+    <a href="index.html">← 先回学院大门逛逛</a>
+  </div>
+</noscript>
+
+<main class="stage">
+
+  <!-- 未通过第 7 关的锁屏 -->
+  <div class="noscript-note" id="lockScreen" hidden>
+    先让你的作品好看又体面，再来为它建一座陈列殿堂。<br><br>
+    <a class="btn btn-gold" href="level7.html">去第 7 关 · 披上星光长袍</a>
+  </div>
+
+  <header class="hero" id="heroSection">
+    <span class="chapter-tag">第二章 · 造物课 · 收官</span>
+    <div class="hall-wrap" aria-hidden="true">
+      <svg class="hall-svg" id="hall" viewBox="0 0 320 260" fill="none">
+        <!-- pediment + columns -->
+        <path class="hall-outline" d="M50,80 L270,80 L160,30 Z"/>
+        <line class="hall-outline" x1="70" y1="80" x2="70" y2="220"/>
+        <line class="hall-outline" x1="140" y1="80" x2="140" y2="220"/>
+        <line class="hall-outline" x1="210" y1="80" x2="210" y2="220"/>
+        <line class="hall-outline" x1="280" y1="80" x2="280" y2="220"/>
+        <line class="hall-outline" x1="60" y1="220" x2="300" y2="220"/>
+        <line class="hall-outline" x1="40" y1="228" x2="320" y2="228"/>
+        <!-- ground -->
+        <line class="pedestal" x1="50" y1="230" x2="150" y2="230"/>
+        <line class="pedestal" x1="170" y1="230" x2="270" y2="230"/>
+        <!-- wall paintings x3 -->
+        <g class="painting" id="paint1">
+          <rect x="82" y="100" width="46" height="52" rx="4" stroke="#e3b04b" stroke-width="1.5"/>
+          <rect x="88" y="106" width="34" height="40" rx="2" fill="#e3b04b" fill-opacity="0.08"/>
+        </g>
+        <g class="painting" id="paint2">
+          <rect x="152" y="100" width="46" height="52" rx="4" stroke="#e3b04b" stroke-width="1.5"/>
+          <rect x="158" y="106" width="34" height="40" rx="2" fill="#e3b04b" fill-opacity="0.08"/>
+        </g>
+        <g class="painting" id="paint3">
+          <rect x="222" y="100" width="46" height="52" rx="4" stroke="#e3b04b" stroke-width="1.5"/>
+          <rect x="228" y="106" width="34" height="40" rx="2" fill="#e3b04b" fill-opacity="0.08"/>
+        </g>
+        <!-- lanterns -->
+        <g class="lantern" id="lantern1">
+          <circle cx="82" cy="145" r="5" fill="#e3b04b"/><line x1="82" y1="140" x2="82" y2="128" stroke="#8a7c62" stroke-width="1"/>
+        </g>
+        <g class="lantern" id="lantern2">
+          <circle cx="152" cy="88" r="5" fill="#e3b04b"/><line x1="152" y1="66" x2="152" y2="83" stroke="#8a7c62" stroke-width="1"/>
+        </g>
+        <g class="lantern" id="lantern3">
+          <circle cx="246" cy="145" r="5" fill="#e3b04b"/><line x1="246" y1="140" x2="246" y2="128" stroke="#8a7c62" stroke-width="1"/>
+        </g>
+        <!-- wall glow behind paintings -->
+        <g class="wall" id="wall1"><rect x="76" y="94" width="58" height="64" rx="6" fill="#e3b04b" fill-opacity="0.10"/></g>
+        <g class="wall" id="wall2"><rect x="146" y="94" width="58" height="64" rx="6" fill="#e3b04b" fill-opacity="0.10"/></g>
+        <g class="wall" id="wall3"><rect x="216" y="94" width="58" height="64" rx="6" fill="#e3b04b" fill-opacity="0.10"/></g>
+      </svg>
+    </div>
+
+    <h1>点亮陈列殿堂，让别人看见你</h1>
+    <p class="narration">
+      前几关你做出了会动、会看世界、又好看的作品。但别人怎么知道那都是你做的？今天要建一座<strong>陈列殿堂</strong>：
+      用咒语做一个你的个人主页/作品门面，把自己一路做的网页一件件挂进去——别人一进门，
+      就知道<strong>你是谁、你做过什么</strong>。
+    </p>
+    <button class="btn btn-gold" id="startBtn">开始点亮陈列殿堂</button>
+    <p class="mono" style="margin-top:14px;font-size:12px;color:var(--text-faint);letter-spacing:.06em">
+      免费 · 纯浏览器 · 约二十分钟 · 完成即得魔力值 +360
+    </p>
+  </header>
+
+  <section class="road" id="taskRoad" aria-label="三件陈列">
+
+    <!-- 步骤一 · 门面骨架 -->
+    <article class="step locked" id="step1" data-step="1">
+      <span class="owl-node" aria-hidden="true"><span class="dot"></span></span>
+      <div class="step-card">
+        <div class="step-head">
+          <span class="step-no">01</span>
+          <h2 class="step-title">第一件：搭出你的门面骨架</h2>
+          <span class="step-state mono" id="state1">未解锁</span>
+        </div>
+        <div class="step-body">
+          <p>第一步：从零做一个<strong>个人主页</strong>的骨架——有标题、一句自我介绍、一个放作品的地方。这是整座殿堂的墙和梁。</p>
+          <div class="spell">
+            <span class="mono">把下面这句粘贴给你的 AI 工具：</span>
+            <span class="mono">「请帮我新建一个 index.html 作为我的个人主页：页面顶部是我的名字和一个简短自我介绍，下面留一块"我的作品"区域（暂时空的列表）。风格简单干净即可，把完整的 index.html 全文给我。」</span>
+          </div>
+          <p class="spell-note">这是新仓库或你作品仓库里的新页面。建好/替换、Commit、上线后，能看到一个人的门面雏形。</p>
+          <p class="away-note"><span class="wing">✦</span><span>猫头鹰立起殿堂梁柱…门面能上线后回来。</span></p>
+          <div class="step-actions">
+            <a class="btn btn-gold js-dispatch" href="https://github.com/" target="_blank" rel="noopener">放猫头鹰去立梁柱</a>
+            <button class="btn btn-ghost js-return" hidden>门面立起来了 · 收回执</button>
+          </div>
+          <div class="term-strip" aria-hidden="true" style="margin-top:14px">
+            <div class="t-cmd">git commit -m "第一件：殿堂立起了门面骨架"</div>
+            <span class="term-tag">示意演示 · 你在网页上操作时，GitHub 正在替你执行</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 步骤二 · 挂第一件作品 -->
+    <article class="step locked" id="step2" data-step="2">
+      <span class="owl-node" aria-hidden="true"><span class="dot"></span></span>
+      <div class="step-card">
+        <div class="step-head">
+          <span class="step-no">02</span>
+          <h2 class="step-title">第二件：挂上你的第一件作品</h2>
+          <span class="step-state mono" id="state2">未解锁</span>
+        </div>
+        <div class="step-body">
+          <p>第二步：把你在学院做过的那个<strong>线上作品</strong>挂进个人主页——给它一个名字、一句话简介、一个点进去的链接。陈列开始了。</p>
+          <div class="spell">
+            <span class="mono">把下面这句粘贴给同一个 AI：</span>
+            <span class="mono">「请在个人主页的'我的作品'区域加第一件作品卡片：标题（比如'我的第一个网页'）、一句介绍、和一个可点击的链接指向我之前做的那个网页。把更新后的完整 index.html 全文给我。」</span>
+          </div>
+          <p class="spell-note">替换、Commit、刷新——主页里出现第一件点得进去的作品了。</p>
+          <p class="away-note"><span class="wing">✦</span><span>猫头鹰挂上第一幅画…第一件作品能点开后回来。</span></p>
+          <div class="step-actions">
+            <a class="btn btn-gold js-dispatch" href="https://github.com/" target="_blank" rel="noopener">放猫头鹰去挂作品</a>
+            <button class="btn btn-ghost js-return" hidden>第一件作品挂上了 · 收回执</button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 步骤三 · 挂齐作品+联系 -->
+    <article class="step locked" id="step3" data-step="3">
+      <span class="owl-node" aria-hidden="true"><span class="dot"></span></span>
+      <div class="step-card">
+        <div class="step-head">
+          <span class="step-no">03</span>
+          <h2 class="step-title">第三件：挂齐其余作品并留下署名</h2>
+          <span class="step-state mono" id="state3">未解锁</span>
+        </div>
+        <div class="step-body">
+          <p>第三步：把主页做完整——再挂一两件作品、在页尾署名一句「这是谁做的」、留一个能联系到你的方式。殿堂落成，随时欢迎来客。</p>
+          <div class="spell">
+            <span class="mono">把下面这句粘贴给同样的 AI：</span>
+            <span class="mono">「请把个人主页做完：再加一两张作品卡片，页尾加上'这是 [你的名字] 的作品'和一句话联系/关注方式。用卡片展示、排版整齐。把更新后的完整 index.html 全文给我。」</span>
+          </div>
+          <p class="spell-note">替换、Commit、刷新——三件陈列齐了，殿堂正式落成。</p>
+          <p class="away-note"><span class="wing">✦</span><span>猫头鹰挂齐所有画并写下署名…作品都挂齐后回来。</span></p>
+          <div class="step-actions">
+            <a class="btn btn-gold js-dispatch" href="https://github.com/" target="_blank" rel="noopener">放猫头鹰去挂齐作品</a>
+            <button class="btn btn-ghost js-return" hidden>陈列齐了 · 收回执</button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </section>
+
+  <!-- 封印凭证 -->
+  <section class="seal-panel" id="sealPanel" aria-labelledby="sealTitle">
+    <h2 id="sealTitle">封印凭证</h2>
+    <p class="hint" id="sealHint">三件陈列齐了、门面真的好看后，把这个人主页的线上网址贴在这里，领取魔力值。网址形如：你的用户名.github.io/仓库名/</p>
+    <div class="paste-row">
+      <input type="url" id="siteUrl" placeholder="https://你的用户名.github.io/仓库名/" aria-label="你的线上作品网址" autocomplete="off" spellcheck="false">
+      <button class="btn btn-gold" id="sealBtn" disabled>验看封印 · 领取魔力值</button>
+    </div>
+    <p class="paste-msg" id="pasteMsg" aria-live="polite"></p>
+  </section>
+
+  <!-- LEVEL UP -->
+  <section class="levelup" id="levelup" hidden aria-labelledby="luTitle">
+    <div class="lu-head" id="luTitle">✦ 第二章 · 造物课 · 收官</div>
+    <div class="lu-xp" id="luXp">魔力值 +360</div>
+    <div class="rank-card">
+      <span class="rank-badge" aria-hidden="true">✦</span>
+      <div>
+        <div class="rank-name" id="rankName">称号维持 · 施咒学徒</div>
+        <div class="rank-note" id="rankNote">第二章收官 · 下一称号「卷轴管理员」在更后面</div>
+      </div>
+    </div>
+    <div class="share-label">你的作品殿堂落成了。把主页地址发给朋友，让他们看看你的成果：</div>
+    <div class="share-row">
+      <input type="text" id="shareUrl" readonly aria-label="你的线上作品地址">
+      <button class="copy-btn" id="copyBtn">复制链接</button>
+    </div>
+    <div class="share-note">打开的人会看到一座挂满你作品的殿堂——你被看见了</div>
+    <div class="lu-actions">
+      <a class="btn btn-gold" href="index.html#map">看看下一关是什么</a>
+      <a class="btn btn-ghost" href="index.html">回学院大门</a>
+    </div>
+  </section>
+
+</main>
+
+<script>
+(function () {
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- store ---------- */
+  var SK = "magicode.progress.v1";
+  function load() {
+    try {
+      var r = localStorage.getItem(SK);
+      if (!r) return null;
+      var p = JSON.parse(r);
+      if (typeof p !== "object" || p === null) return null;
+      return {
+        xp: Number(p.xp) || 0, streak: Number(p.streak) || 0,
+        lastDay: String(p.lastDay || ""),
+        level0Done: !!p.level0Done, level1Done: !!p.level1Done, level2Done: !!p.level2Done, level3Done: !!p.level3Done, level4Done: !!p.level4Done, level5Done: !!p.level5Done, level6Done: !!p.level6Done, level7Done: !!p.level7Done, level8Done: !!p.level8Done,
+        title: String(p.title || ""), repoUrl: String(p.repoUrl || ""), siteUrl: String(p.siteUrl || "")
+      };
+    } catch (e) { return null; }
+  }
+  function save(p) { try { localStorage.setItem(SK, JSON.stringify(p)); } catch (e) {} }
+  function today() {
+    var d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+  }
+
+  var prog = load();
+  var lockScreen = document.getElementById("lockScreen");
+  var heroSection = document.getElementById("heroSection");
+  var taskRoad = document.getElementById("taskRoad");
+  var startBtn = document.getElementById("startBtn");
+
+  /* ---------- locked out (need level7) ---------- */
+  if (!prog || !prog.level7Done) {
+    heroSection.hidden = true;
+    taskRoad.hidden = true;
+    document.getElementById("sealPanel").hidden = true;
+    lockScreen.hidden = false;
+    return;
+  }
+
+  /* ---------- illuminate hall ---------- */
+  function illuminate(n, deps) {
+    for (var i = 1; i <= 3; i++) {
+      var w = document.getElementById("wall"+i);
+      var p = document.getElementById("paint"+i);
+      var l = document.getElementById("lantern"+i);
+      if (i <= n) { w.classList.add("on"); p.classList.add("on"); l.classList.add("on"); }
+      else { w.classList.remove("on"); p.classList.remove("on"); l.classList.remove("on"); }
+    }
+  }
+
+  /* ---------- returning graduate ---------- */
+  if (prog.level8Done && (prog.siteUrl || prog.repoUrl)) {
+    document.getElementById("levelup").hidden = false;
+    document.getElementById("luXp").textContent = "魔力值 " + prog.xp + " · 连击 ×" + prog.streak;
+    document.getElementById("shareUrl").value = prog.siteUrl || prog.repoUrl;
+    document.getElementById("copyBtn").classList.add("on");
+    illuminate(3, true);
+    ["1","2","3"].forEach(function (n) {
+      var el = document.getElementById("step"+n);
+      el.classList.remove("locked"); el.classList.add("sealed");
+      el.querySelector(".js-dispatch").style.display = "none";
+      el.querySelector(".js-return").hidden = true;
+    });
+    startBtn.textContent = "再看一眼 · 殿堂已点亮";
+    startBtn.addEventListener("click", function () {
+      document.getElementById("levelup").scrollIntoView({ behavior: reduce?"auto":"smooth", block:"center" });
+    });
+    document.getElementById("sealPanel").classList.add("open");
+    var si = document.getElementById("siteUrl");
+    si.value = prog.siteUrl || prog.repoUrl; si.readOnly = true;
+    var sb = document.getElementById("sealBtn");
+    sb.disabled = true; sb.textContent = "已入账";
+    return;
+  }
+
+  /* ---------- round-trip ---------- */
+  var steps = {};
+  ["1","2","3"].forEach(function (n) { steps[n] = document.getElementById("step"+n); });
+  var current = 1;
+
+  function setS(n,t){ document.getElementById("state"+n).textContent = t; }
+
+  function activate(n) {
+    current = n;
+    var el = steps[n];
+    el.classList.remove("locked"); el.classList.add("active");
+    setS(n, "待命");
+    el.querySelector(".js-return").hidden = true;
+    el.querySelector(".js-dispatch").style.display = "";
+  }
+  function dispatch(n) {
+    var el = steps[n];
+    el.classList.add("away");
+    setS(n, "猫头鹰在外");
+    el.querySelector(".js-dispatch").style.display = "none";
+    el.querySelector(".js-return").hidden = false;
+    el.querySelector(".js-return").focus({ preventScroll: true });
+  }
+  function seal(n) {
+    var el = steps[n];
+    el.classList.remove("active","away"); el.classList.add("sealed");
+    setS(n, "已点亮 ✓");
+    el.querySelector(".js-return").hidden = true;
+    illuminate(Number(n), true);
+  }
+
+  function openSeal() {
+    var panel = document.getElementById("sealPanel");
+    panel.classList.add("open");
+    var btn = document.getElementById("sealBtn");
+    var inp = document.getElementById("siteUrl");
+    btn.disabled = inp.value.trim().length === 0;
+    inp.focus({ preventScroll: true });
+  }
+
+  startBtn.addEventListener("click", function () {
+    activate(1);
+    steps[1].scrollIntoView({ behavior: reduce?"auto":"smooth", block:"center" });
+    this.blur();
+  });
+
+  ["1","2","3"].forEach(function (n) {
+    steps[n].querySelector(".js-dispatch").addEventListener("click", function () { dispatch(n); });
+    steps[n].querySelector(".js-return").addEventListener("click", function () {
+      seal(n);
+      var next = Number(n) + 1;
+      if (next <= 3) {
+        activate(String(next));
+        steps[String(next)].scrollIntoView({ behavior: reduce?"auto":"smooth", block:"center" });
+      } else {
+        openSeal();
+        document.getElementById("sealPanel").scrollIntoView({ behavior: reduce?"auto":"smooth", block:"center" });
+      }
+    });
+  });
+
+  /* ---------- seal ---------- */
+  var sealBtn = document.getElementById("sealBtn");
+  var urlInput = document.getElementById("siteUrl");
+  var pasteMsg = document.getElementById("pasteMsg");
+  var URL_RE = /^https?:\/\/([\w.-]+\.)*[\w-]+\.(io|com|dev|app|net|org|github\.io|pages\.dev)[/:\w.-]*/i;
+
+  urlInput.addEventListener("input", function () {
+    pasteMsg.textContent = ""; pasteMsg.className = "paste-msg";
+    sealBtn.disabled = urlInput.value.trim().length === 0;
+  });
+
+  sealBtn.addEventListener("click", function () {
+    var url = urlInput.value.trim();
+    if (!URL_RE.test(url)) {
+      pasteMsg.textContent = "这看起来不像一个线上网址——应形如 你的用户名.github.io/仓库名/";
+      pasteMsg.className = "paste-msg err";
+      return;
+    }
+    pasteMsg.textContent = "封印确认 ✓";
+    pasteMsg.className = "paste-msg ok";
+
+    var p = load() || { xp:0,streak:0,lastDay:"",level0Done:false,level1Done:false,level2Done:false,level3Done:false,level4Done:false,level5Done:false,level6Done:false,level7Done:false,level8Done:false,title:"",repoUrl:"",siteUrl:"" };
+    var firstTime = !p.level8Done;
+    var gainedXp = false;
+    if (firstTime) { p.level8Done = true; p.xp += 360; gainedXp = true; }
+    p.siteUrl = url;
+    var td = today();
+    if (gainedXp) {
+      if (p.lastDay !== td) {
+        if (p.lastDay) {
+          var prev = new Date(p.lastDay+"T00:00:00");
+          var now = new Date(td+"T00:00:00");
+          var diff = Math.round((now - prev) / 86400000);
+          p.streak = (diff === 1) ? p.streak + 1 : 1;
+        } else { p.streak = 1; }
+      }
+      p.lastDay = td;
+    }
+    save(p);
+
+    var lu = document.getElementById("levelup");
+    lu.hidden = false;
+    if (firstTime) {
+      document.getElementById("luXp").textContent = "魔力值 +360";
+    } else {
+      document.getElementById("luXp").textContent = "魔力值 " + p.xp + " · 连击 ×" + p.streak;
+    }
+    document.getElementById("rankName").textContent = "称号维持 · 施咒学徒";
+    document.getElementById("rankNote").textContent = "第二章收官 · 下一称号「卷轴管理员」在更后面";
+    document.getElementById("shareUrl").value = url;
+    sealBtn.disabled = true; sealBtn.textContent = "已入账";
+    urlInput.readOnly = true;
+    if (reduce) lu.scrollIntoView({ block:"center" }); else lu.scrollIntoView({ behavior:"smooth", block:"center" });
+  });
+
+  /* ---------- copy ---------- */
+  document.getElementById("copyBtn").addEventListener("click", function () {
+    var text = document.getElementById("shareUrl").value;
+    var btn = this;
+    function ok() { btn.textContent = "复制了 ✓"; setTimeout(function(){ btn.textContent = "复制链接"; }, 1800); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(ok, function(){ ok(); });
+    } else { ok(); }
+  });
+})();
+</script>
+
+</html>
