@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>第 4 关 · 点亮你的第一张地图 — 魔码学院</title>
-<meta name="description" content="魔码学院第 4 关：用咒语从零做一个能发出去的网页，再用显形术（部署）让它上线。第二章造物课首关。">
+<title>第 12 关 · 护城星河 — 魔码学院</title>
+<meta name="description" content="魔码学院第 12 关：把除咒/回溯/分身三招合成完整防御心法，保护你的作品。第三章黑魔法防御课收官。">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Ccircle cx='13' cy='13' r='11' fill='%230d0b08'/%3E%3Cpath d='M13 5 L20 17 H6 Z' stroke='%23e3b04b' stroke-width='1.5' fill='none'/%3E%3C/svg%3E">
 <meta property="og:site_name" content="魔码学院 MagiCode Academy">
-<meta property="og:title" content="我用咒语点亮了第一张地图——我的网页上线了">
-<meta property="og:description" content="魔码学院第 4 关：从零做一个能发出去的网页并部署上线。免费 · 纯浏览器。">
+<meta property="og:title" content="我的作品有一整条星河护城了——黑魔法防御课结业">
+<meta property="og:description" content="魔码学院第 12 关：学会用除咒/回溯/分身三招保护作品，晋升除咒师。第三章收官。免费 · 纯浏览器。">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="zh_CN">
 <meta name="twitter:card" content="summary">
@@ -29,10 +29,9 @@
   ::-webkit-scrollbar{width:10px} ::-webkit-scrollbar-thumb{background:var(--ink-3);border-radius:5px}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px}
   .mono{font-family:var(--font-mono)}
-  .sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
   html:not(.js) .stage{display:none}
 
-  .sky{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(1px 1px at 12% 24%,rgba(232,214,175,.5) 50%,transparent 51%),radial-gradient(1px 1px at 68% 12%,rgba(232,214,175,.35) 50%,transparent 51%),radial-gradient(1.5px 1.5px at 84% 38%,rgba(232,214,175,.4) 50%,transparent 51%),radial-gradient(1px 1px at 32% 64%,rgba(232,214,175,.3) 50%,transparent 51%)}
+  .sky{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(1px 1px at 12% 24%,rgba(232,214,175,.5) 50%,transparent 51%),radial-gradient(1px 1px at 68% 12%,rgba(232,214,175,.35) 50%,transparent 51%),radial-gradient(1.5px 1.5px at 84% 38%,rgba(232,214,175,.4) 50%,transparent 51%),radial-gradient(1px 1px at 32% 64%,rgba(232,214,175,.3) 50%,transparent 51%),radial-gradient(1px 1px at 55% 82%,rgba(232,214,175,.35) 50%,transparent 51%)}
   .moon{position:fixed;z-index:0;pointer-events:none;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle at 38% 34%,rgba(242,234,217,0.09),transparent 62%);top:-100px;right:-80px}
 
   .topbar{position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;max-width:1120px;margin:0 auto;padding:20px 24px 0}
@@ -42,7 +41,7 @@
   .stage{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:34px 24px 90px}
   .hero{text-align:center;padding:20px 0 10px}
   .hero h1{font-size:clamp(24px,4vw,32px);font-weight:800;letter-spacing:.02em;margin-bottom:10px}
-  .hero .narration{font-size:15.5px;color:var(--text-dim);max-width:34em;margin:0 auto 22px}
+  .hero .narration{font-size:15.5px;color:var(--text-dim);max-width:38em;margin:0 auto 22px}
   .hero .narration strong{color:var(--text);font-weight:600}
 
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;text-decoration:none;font-weight:600;cursor:pointer;font-family:var(--font-sans);white-space:nowrap;transition:transform .2s,background .25s,opacity .25s,border-color .25s,color .25s}
@@ -51,15 +50,15 @@
   .btn-ghost{border:1px solid var(--line-strong);color:var(--text);background:transparent;padding:11px 24px;font-size:14px}.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
   .btn[disabled]{opacity:.4;cursor:not-allowed}
 
-  /* map */
   .chapter-tag{display:inline-block;margin:0 auto 18px;font-family:var(--font-mono);font-size:11px;color:var(--gold);letter-spacing:.2em;border:1px solid var(--line-strong);border-radius:999px;padding:6px 16px;background:var(--ink-2)}
-  .map-wrap{display:flex;justify-content:center;margin:26px 0 30px}
-  .map-svg{width:100%;max-width:600px;height:auto}
-  .region{opacity:.07;transition:opacity .7s ease,fill .7s ease}
-  .region.on{opacity:.9}
-  .region.glow{filter:drop-shadow(0 0 8px rgba(227,176,75,.9));opacity:1}
-  .region-label{fill:#0d0b08;font-family:ui-monospace,Consolas,monospace;font-size:13px;font-weight:700;opacity:0;transition:opacity .5s ease .2s}
-  .region.on .region-label{opacity:1}
+
+  /* river galaxy */
+  .river-wrap{display:flex;justify-content:center;margin:10px 0 26px}
+  .river-svg{width:100%;max-width:320px;height:auto}
+  .river-bank{stroke:#8a7c62;stroke-width:1.5;fill:none}
+  .tributary{opacity:0;stroke:#e3b04b;stroke-width:1.6;fill:none;transition:opacity .8s ease}
+  .tributary.on{opacity:.95}
+  .trib.q1{stroke:#e3b04b} .trib.q2{stroke:#e3c98a} .trib.q3{stroke:#d9a06a}
 
   .road{position:relative;padding-left:40px;display:flex;flex-direction:column;gap:18px;margin-top:16px}
   .road::before{content:"";position:absolute;left:15px;top:12px;bottom:12px;border-left:1px dashed var(--line-strong)}
@@ -75,29 +74,35 @@
   .step-head{display:flex;align-items:baseline;gap:12px;margin-bottom:8px;flex-wrap:wrap}
   .step-no{font-family:var(--font-mono);font-size:11px;color:var(--gold);letter-spacing:.16em}
   .step-title{font-weight:700;font-size:17px}
+  .muted-title{color:var(--text-faint);font-weight:700;font-size:17px}
   .step-state{margin-left:auto;font-family:var(--font-mono);font-size:11px;color:var(--text-faint);letter-spacing:.12em}
   .step.active .step-state{color:var(--gold)}
   .step-body p{color:var(--text-dim);font-size:14.5px;margin-bottom:10px}
   .step-body p strong{color:var(--text);font-weight:600}
-  .howto{list-style:none;margin:4px 0 16px}
+  .howto{list-style:none;margin:4px 0 0}
   .howto li{position:relative;padding-left:22px;color:var(--text-dim);font-size:14px;margin-bottom:7px}
   .howto li::before{content:"✦";position:absolute;left:2px;color:var(--gold);font-size:11px;top:4px}
   .howto li b{color:var(--text);font-weight:600}
-  .step-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .step-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:8px}
   .away-note{display:none;align-items:center;gap:10px;color:var(--text-dim);font-size:14px}
   .step.away .away-note{display:inline-flex}
   .away-note .wing{animation:bob 2s ease-in-out infinite}
   @keyframes bob{50%{transform:translateY(-4px)}}
+  .recap{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0 4px}
+  .recap-card{border:1px solid var(--line-strong);border-radius:12px;padding:12px 14px;background:var(--ink)}
+  .recap-card .r-title{font-size:11px;color:var(--gold);font-family:var(--font-mono);letter-spacing:.1em;margin-bottom:4px}
+  .recap-card .r-name{font-weight:700;font-size:13.5px;margin-bottom:6px}
+  .recap-card .r-text{font-size:12px;color:var(--text-dim);line-height:1.5}
+  .recap-card.grayed{opacity:.5}
 
   .spell{border:1px solid var(--line-strong);border-radius:12px;background:var(--ink);padding:14px 16px;margin:12px 0 4px;font-size:13.5px;color:var(--text-dim)}
   .spell .mono{color:var(--gold);font-size:13px;display:block;margin-bottom:6px;line-height:1.7}
-  .spell-note{font-size:11.5px;color:var(--text-faint);margin-bottom:14px}
+  .spell-note{font-size:11.5px;color:var(--text-faint);margin:2px 0 12px}
 
   .term-strip{margin-top:10px;background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:12px 16px;text-align:left;font-family:var(--font-mono);font-size:12.5px}
   .term-strip .t-cmd::before{content:"$ ";color:var(--gold)}
   .term-strip div{color:var(--text-dim);margin-bottom:4px}
   .term-strip .t-cmd{color:var(--text)}
-  .term-strip .t-result{color:var(--text-faint)}
   .term-tag{display:block;font-size:10.5px;letter-spacing:.14em;color:var(--text-faint);margin-top:6px}
 
   .seal-panel{margin-top:34px;border:1px solid var(--line);border-radius:var(--radius-card);background:var(--ink-2);padding:28px 30px;transition:border-color .4s}
@@ -126,11 +131,6 @@
   .share-note{font-size:12px;color:var(--text-faint);margin-top:10px}
   .lu-actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:24px}
 
-  .promo{display:flex;align-items:center;gap:12px;border:1px solid var(--gold);border-radius:12px;padding:14px 18px;margin-bottom:18px;background:var(--gold-soft)}
-  .promo .pi{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--gold);display:grid;place-items:center;color:var(--gold);font-size:16px;flex:none}
-  .promo-t{font-size:14px;color:var(--text)} .promo-s{font-size:12px;color:var(--text-dim)}
-  .promo[hidden]{display:none}
-
   .noscript-note{position:relative;z-index:2;max-width:620px;margin:60px auto;padding:26px 30px;border:1px solid var(--line-strong);border-radius:var(--radius-card);background:var(--ink-2);color:var(--text-dim);font-size:14.5px}
   .noscript-note a{color:var(--gold)}
 
@@ -142,11 +142,11 @@
 <body>
 
 <!-- impeccable direction contract
-THESIS: 第 4 关把「从零做网页再部署」写成点亮一张魔法地图——每次用咒语真实做出一块（规划、写代码、装修、部署上线），地图上对应区域点亮发光；四块全亮 = 作品真正上线。拒绝的默认编排是带截图的图文步骤条。
-OWN-WORLD: 沿用暗夜图书馆墨底 #0d0b08、烛金 #e3b04b、羊皮纸 #f2ead9；地图是等宽线描 SVG，四块区域随进度点亮并发光；示意终端和咒语卡带「示意演示」标注。
-STORY: 访客相信「我能从零做一个能发出去的网页，并且让它真正上线」——第一次完成从想法到上线的一整个咒语循环，贴上线上地址得 +240 魔力值。
-FIRST VIEWPORT: 中央一张等高线地图，四个区域虚悬其上，下方唯一金色按钮「开始点亮地图」；每块区域对应一个真实动手步骤。
-FORM: 点亮地图（第 4 关结构牌，用户锁定），每完成一步点亮一块区域，四块全亮后开放封印凭证。
+THESIS: 第 12 关把「完整防御心法」写成一座由护城河环绕的结界——前几关的单招（除咒、回溯、分身）是三条支流，这一关把三条支流汇成一条护城星河，再补上「归档」这最后一块基石，让访客意识到作品不是做完就算了，而是有一套持续的护城动作在围着它。第三章黑魔法防御课就此收官，晋升「除咒师」。拒绝的默认编排是带截图的图文步骤条。
+OWN-WORLD: 沿用暗夜图书馆墨底 #0d0b08、烛金 #e3b04b、羊纸 #f2ead9；护城星河是轮廓描线 SVG，三条支流从上方两侧汇入中央主河，主河一道入底；示意终端带「示意演示」标注——本关无新增视觉令牌，只复用既有一词「星河」作结业母题，与第二、三章各关的发光器一脉相承。
+STORY: 访客相信「我的作品值得一道持续的护城河」——把三招（除咒/回溯/分身）逐个收拢成护城星河的三条支流，再写下最后的归档守护，贴回仓库链接得 +480 魔力值并晋升「除咒师」。
+FIRST VIEWPORT: 中央一条轮廓护城星河，三条支流半隐未亮，下方唯一金色按钮「开始汇流成河」；每完成一步点亮一条支流。
+FORM: 护城星河（第 12 关结构牌，用户锁定），每完成一步点亮一条支流，三条支流全部汇入后亮起中央主河，正式开放晋升凭证。
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance.
 -->
 
@@ -155,175 +155,161 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 
 <div class="topbar">
   <a class="back" href="index.html">← 学院大门</a>
-  <span class="lv-tag">LEVEL 4 · 第二章 · 造物课</span>
+  <span class="lv-tag">LEVEL 12 · 第三章 · 黑魔法防御课 · 收官</span>
 </div>
 
 <noscript>
   <div class="noscript-note">
-    这一关需要 JavaScript 才能点亮地图。任务本身可以先记住：<br>
-    用咒语从零做一个能发出去的网页，再用「显形术」（GitHub Pages 部署）让它上线。<br><br>
+    这一关需要 JavaScript 才能汇流。任务本身可以先记住：<br>
+    把除咒、回溯、分身三招合成一道护城星河，再补上「归档」这最后一块基石，让作品一直受保护。<br><br>
     <a href="index.html">← 先回学院大门逛逛</a>
   </div>
 </noscript>
 
 <main class="stage">
 
-  <!-- 未通过第 3 关的锁屏 -->
+  <!-- 未通过第 11 关的锁屏 -->
   <div class="noscript-note" id="lockScreen" hidden>
-    你还没在石碑上铭刻第一章。先完成第 3 关，再来造你的第一件作品。<br><br>
-    <a class="btn btn-gold" href="level3.html">去第 3 关 · 铭刻石碑</a>
+    先学会安全地试新功能，再来为整座作品筑起护城星河。<br><br>
+    <a class="btn btn-gold" href="level11.html">去第 11 关 · 透过冰晶棱镜</a>
   </div>
 
   <header class="hero" id="heroSection">
-    <span class="chapter-tag">第二章 · 造物课</span>
-    <div class="map-wrap" aria-hidden="true">
-      <svg class="map-svg" id="map" viewBox="0 0 600 360" fill="none">
-        <!-- region 1 : west -->
-        <path id="reg1" class="region" d="M60,120 L160,80 L210,150 L150,220 L70,190 Z" fill="#e3b04b" stroke="#e3b04b" stroke-width="2"/>
-        <text class="region-label" x="118" y="150" text-anchor="middle">规划</text>
-        <!-- region 2 : center -->
-        <path id="reg2" class="region" d="M240,140 L330,90 L410,130 L390,230 L280,250 L235,200 Z" fill="#e3b04b" stroke="#e3b04b" stroke-width="2"/>
-        <text class="region-label" x="320" y="170" text-anchor="middle">写码</text>
-        <!-- region 3 : east -->
-        <path id="reg3" class="region" d="M440,110 L530,90 L575,170 L510,240 L420,220 L435,150 Z" fill="#e3b04b" stroke="#e3b04b" stroke-width="2"/>
-        <text class="region-label" x="490" y="160" text-anchor="middle">装修</text>
-        <!-- region 4 : south island -->
-        <path id="reg4" class="region" d="M150,270 L260,255 L300,305 L220,335 L130,315 Z" fill="#e3b04b" stroke="#e3b04b" stroke-width="2"/>
-        <text class="region-label" x="215" y="300" text-anchor="middle">显形</text>
-        <!-- map frame -->
-        <rect x="20" y="30" width="560" height="310" rx="14" stroke="#8a7c62" stroke-width="1.5" opacity="0.4"/>
+    <span class="chapter-tag">第三章 · 黑魔法防御课 · 收官</span>
+    <div class="river-wrap" aria-hidden="true">
+      <svg class="river-svg" id="river" viewBox="0 0 320 200" fill="none">
+        <!-- main river bed (bottom) -->
+        <path class="river-bank" id="mainRiver" d="M160 118 C 150 146 152 170 160 192"/>
+        <!-- tributary 1: 除咒 -->
+        <path class="tributary trib q1" id="t1" d="M70 24 C 96 60 128 92 160 118"/>
+        <!-- tributary 2: 回溯 -->
+        <path class="tributary trib q2" id="t2" d="M160 24 C 160 60 160 92 160 118"/>
+        <!-- tributary 3: 分身 -->
+        <path class="tributary trib q3" id="t3" d="M250 24 C 224 60 192 92 160 118"/>
+        <!-- spring dots -->
+        <circle cx="70" cy="24" r="3" fill="none" stroke="#e3b04b" stroke-width="1.4" id="s1"/>
+        <circle cx="160" cy="24" r="3" fill="none" stroke="#e3c98a" stroke-width="1.4" id="s2"/>
+        <circle cx="250" cy="24" r="3" fill="none" stroke="#d9a06a" stroke-width="1.4" id="s3"/>
       </svg>
     </div>
 
-    <h1>点亮你的第一张地图</h1>
+    <h1>把三招汇成一条护城星河</h1>
     <p class="narration">
-      前几关你学会了封印、让历史生长、给作品加改动。但那些都是「已有」的东西。这一次，你要<strong>从零做出一个能发出去的网页</strong>，并让它真正上线——全世界都能打开。
-      我们用一句话施咒（提示词），使魔（AI）帮你写出真实的代码；最后用<strong>显形术（部署到 GitHub Pages）</strong>让整幅地图亮起。
+      前三关上你学会了除咒（面对报错）、回溯（倒转时光）、分身（安全试新）——
+      它们是三条单独的支流。今天把它们<strong>汇成一条护城星河</strong>，再补上最后一块基石：
+      把每一课<strong>归档</strong>起来持续守护。作品不是做完就算了，而是有一条永不干涸的护城河围着它。
     </p>
-    <button class="btn btn-gold" id="startBtn">开始点亮地图</button>
+    <button class="btn btn-gold" id="startBtn">开始汇流成河</button>
     <p class="mono" style="margin-top:14px;font-size:12px;color:var(--text-faint);letter-spacing:.06em">
-      免费 · 纯浏览器 · 约二十分钟 · 完成即得魔力值 +240
+      免费 · 纯浏览器 · 约二十分钟 · 完成即得魔力值 +480 并与「除咒师」称号
     </p>
   </header>
 
-  <section class="road" id="taskRoad" aria-label="四步点亮地图">
+  <section class="road" id="taskRoad" aria-label="护城星河三条支流">
 
-    <!-- 步骤一 · 规划 -->
+    <!-- 步骤一 · 除咒 -->
     <article class="step locked" id="step1" data-step="1">
       <span class="owl-node" aria-hidden="true"><span class="dot"></span></span>
       <div class="step-card">
         <div class="step-head">
           <span class="step-no">01</span>
-          <h2 class="step-title">规划：地图想画什么</h2>
+          <h2 class="step-title">第一条支流：除咒 —— 敢于面对报错</h2>
           <span class="step-state mono" id="state1">未解锁</span>
         </div>
         <div class="step-body">
-          <p>先想好你的网页是什么。它不需要大——一个自我介绍页、一个爱好清单页、一个「关于我」都行。把这句话想清楚，就是给 AI 的第一句咒语。</p>
-          <ul class="howto">
-            <li>想好一句话：我的网页是 ______（例如「一个展示我爱好的小页面」）</li>
-            <li>想好它的样子大概是：____（例如「深色背景、金色标题、放一张图片」）</li>
-            <li>打开你的 AI 工具（Claude / ChatGPT / DeepSeek 任一），等一下步骤用它</li>
-          </ul>
-          <p class="away-note"><span class="wing">✦</span><span>猫头鹰守在 AI 工具页旁…想好你的网页是什么后回来。</span></p>
+          <p>第一招你已经学过：<strong>报错不是末日，是猫头鹰来报信</strong>。它告诉你哪里出了岔子，把它贴给 AI，修好它。这一招是护城河的第一块基石——作品一旦出问题，你不慌，能修。</p>
+          <div class="recap">
+            <div class="recap-card">
+              <div class="r-title">第 9 关 · 护法镜</div>
+              <div class="r-name">除咒</div>
+              <div class="r-text">报错 → 贴给 AI → 修好</div>
+            </div>
+          </div>
+          <p class="away-note"><span class="wing">✦</span><span>第一支流开始汇入…把除咒这一招回想一遍后回来。</span></p>
           <div class="step-actions">
-            <a class="btn btn-gold js-dispatch" href="https://github.com/" target="_blank" rel="noopener">放猫头鹰去 AI 工具</a>
-            <button class="btn btn-ghost js-return" hidden>想好了 · 收回执</button>
+            <button class="btn btn-gold js-return">我记起除咒了 · 汇入第一支流</button>
           </div>
         </div>
       </div>
     </article>
 
-    <!-- 步骤二 · 写码 -->
+    <!-- 步骤二 · 回溯 -->
     <article class="step locked" id="step2" data-step="2">
       <span class="owl-node" aria-hidden="true"><span class="dot"></span></span>
       <div class="step-card">
         <div class="step-head">
           <span class="step-no">02</span>
-          <h2 class="step-title">写码：用咒语造一个 HTML 文件</h2>
+          <h2 class="step-title">第二条支流：回溯 —— 改坏了也能倒回</h2>
           <span class="step-state mono" id="state2">未解锁</span>
         </div>
         <div class="step-body">
-          <p>现在让 AI 帮你写真实的代码。你不需要懂代码——只要能说清要什么，并会复制粘贴。</p>
-          <div class="spell">
-            <span class="mono">把下面这句完整粘贴给你的 AI 工具：</span>
-            <span class="mono">「请帮我写一个完整的网页（一个 index.html 文件），内容是我来定：【你的网页是什么 + 大概长什么样】。请用简洁现代的深色风格，金色强调色。把完整代码给我。」</span>
+          <p>第二招：在动手改之前，先给自己<strong>留一扇时光门</strong>。Git 就是你的时间转换器——commit 是给历史留影，revert 是倒转回去。有了它，你敢放手试，因为永远有一座沙漏兜底。</p>
+          <div class="recap">
+            <div class="recap-card">
+              <div class="r-title">第 10 关 · 时光沙漏</div>
+              <div class="r-name">回溯</div>
+              <div class="r-text">改坏 → 找好时光 → Revert</div>
+            </div>
           </div>
-          <p class="spell-note">把【】里换成你在上一步想好的内容。AI 会给你一大段代码——全选复制。</p>
-          <ul class="howto">
-            <li>打开 <b>github.com/new</b>，新建一个仓库，名字用英文（如 <b>my-page</b>），库公开（Public）</li>
-            <li>建好后，在仓库页点 <b>Add file</b> → <b>Create new file</b></li>
-            <li>文件名《 <b>index.html</b> 》，把 AI 给你的代码整个粘贴进去</li>
-            <li>点绿色 <b>Commit changes</b></li>
-          </ul>
-          <p class="away-note"><span class="wing">✦</span><span>猫头鹰叼着代码飞去仓库了…粘贴好、提交后回来。</span></p>
+          <p class="away-note"><span class="wing">✦</span><span>第二支流开始汇入…把回溯这一招回想一遍后回来。</span></p>
           <div class="step-actions">
-            <a class="btn btn-gold js-dispatch" href="https://github.com/new" target="_blank" rel="noopener">去新建仓库</a>
-            <button class="btn btn-ghost js-return" hidden>代码放进去了 · 收回执</button>
-          </div>
-          <div class="term-strip" aria-hidden="true" style="margin-top:14px">
-            <div class="t-cmd">git commit -m "点亮第一块：我的网页已经有了脊椎"</div>
-            <span class="term-tag">示意演示 · 你在网页上操作时，GitHub 正在替你存下这个文件</span>
+            <button class="btn btn-gold js-return">我记起回溯了 · 汇入第二支流</button>
           </div>
         </div>
       </div>
     </article>
 
-    <!-- 步骤三 · 装修 -->
+    <!-- 步骤三 · 分身 -->
     <article class="step locked" id="step3" data-step="3">
       <span class="owl-node" aria-hidden="true"><span class="dot"></span></span>
       <div class="step-card">
         <div class="step-head">
           <span class="step-no">03</span>
-          <h2 class="step-title">装修：再点一块</h2>
+          <h2 class="step-title">第三条支流：分身 —— 安全地试新</h2>
           <span class="step-state mono" id="state3">未解锁</span>
         </div>
         <div class="step-body">
-          <p>第一版也许朴素。现在用第二句咒语，让 AI 帮你的页面「更像样」一点——加一段介绍、一张图、或一个更漂亮的标题区。</p>
-          <div class="spell">
-            <span class="mono">把下面这句粘贴给同一个 AI 工具：</span>
-            <span class="mono">「请帮我把刚才的 index.html 再加一点内容：给我加一段我自己的自我介绍，并把标题做得更醒目好看。保持深色金色风格。把更新后的完整 index.html 全文给我。」</span>
+          <p>第三招：想加新功能？别在主线上一把梭。先开一个<strong>分身分支</strong>，在副本上慢慢试，成了再合并回主线。这样主线永远稳稳当当，你怎么折腾都不怕。</p>
+          <div class="recap">
+            <div class="recap-card">
+              <div class="r-title">第 11 关 · 冰晶棱镜</div>
+              <div class="r-name">分身</div>
+              <div class="r-text">开分支 → 试新功能 → 合并</div>
+            </div>
           </div>
-          <p class="spell-note">复制 AI 给的更新版全文，回到仓库点 index.html 的铅笔图标，全选替换，再 Commit changes。</p>
-          <p class="away-note"><span class="wing">✦</span><span>猫头鹰在装修新仓库…替换好、提交后回来。</span></p>
+          <p class="away-note"><span class="wing">✦</span><span>第三支流开始汇入…把分身这一招回想一遍后回来。</span></p>
           <div class="step-actions">
-            <a class="btn btn-gold js-dispatch" href="https://github.com/" target="_blank" rel="noopener">去装修</a>
-            <button class="btn btn-ghost js-return" hidden>装修好了 · 收回执</button>
-          </div>
-          <div class="term-strip" aria-hidden="true" style="margin-top:14px">
-            <div class="t-cmd">git commit -m "点亮第二块：我的网页有了表情"</div>
-            <span class="term-tag">示意演示 · 你的页面正在长骨头和血肉</span>
+            <button class="btn btn-gold js-return">我记起分身了 · 汇入第三支流</button>
           </div>
         </div>
       </div>
     </article>
 
-    <!-- 步骤四 · 显形术 -->
+    <!-- 步骤四 · 归档 -->
     <article class="step locked" id="step4" data-step="4">
       <span class="owl-node" aria-hidden="true"><span class="dot"></span></span>
       <div class="step-card">
         <div class="step-head">
           <span class="step-no">04</span>
-          <h2 class="step-title">显形术：让地图亮起，作品上线</h2>
+          <h2 class="step-title">最后一课：归档 —— 让护城河长久流动</h2>
           <span class="step-state mono" id="state4">未解锁</span>
         </div>
         <div class="step-body">
-          <p>最后一步是魔法里最爽的一刻：把藏在仓库里的网页<strong>显形到网上</strong>，让全世界都能打开。麻瓜管这叫「部署到 GitHub Pages」。</p>
-          <ul class="howto">
-            <li>在你的仓库页，点顶部的 <b>Settings</b></li>
-            <li>左侧菜单找到 <b>Pages</b></li>
-            <li>在 Source 下拉选 <b>Deploy from a branch</b>，Branch 选 <b>main</b>、目录 <b>/ (root)</b>，点 <b>Save</b></li>
-            <li>等一两分钟，页面上会出现一个网址，形如 <b>你的用户名.github.io/仓库名/</b></li>
-            <li>打开那个网址——你的网页真的上线了</li>
-          </ul>
-          <p><strong>这就是显形术：</strong>同样的一堆代码，部署前只有你和 GitHub 看得见；部署后，全世界每个点开它的人都能看见。</p>
-          <p class="away-note"><span class="wing">✦</span><span>猫头鹰飞去开 Pages…上线后，把它给你的网址记下来。</span></p>
+          <p>三招汇成了一条河。但让它<strong>永不干涸</strong>，还需要最后一块基石——<strong>归档</strong>：定期把作品的每一步好状态保存（commit）、把学到的东西记下来。这样护城河不是一时的，而是你每次回来看它，它都在守着你。</p>
+          <div class="spell">
+            <span class="mono">对 AI 工具说一句话，把这里当成收尾仪式：</span>
+            <span class="mono">「正式结业前，帮我的作品做最后一遍收尾：确认 index.html 没有错别字、没写坏的样子、链接都通。然后把改好的版本完整给我，我 commit 成最后一版。谢谢，我要给这第一座完整的作品一个光荣的收尾。」</span>
+          </div>
+          <p class="spell-note">把 AI 帮你收尾后的最终版 commit 上去。你的第一座完整作品，正式归档。</p>
+          <p class="away-note"><span class="wing">✦</span><span>第四块基石落下…你的作品归档好了后回来。</span></p>
           <div class="step-actions">
-            <a class="btn btn-gold js-dispatch" href="https://github.com/" target="_blank" rel="noopener">启动显形术</a>
-            <button class="btn btn-ghost js-return" hidden>上线了 · 收回执</button>
+            <a class="btn btn-gold js-dispatch" href="https://github.com/" target="_blank" rel="noopener">放猫头鹰去归档</a>
+            <button class="btn btn-ghost js-return" hidden>作品归档好了 · 收回执</button>
           </div>
           <div class="term-strip" aria-hidden="true" style="margin-top:14px">
-            <div class="t-result">✦ 显形术完成 · 你的作品已在网上</div>
-            <span class="term-tag">示意演示 · 部署由 GitHub Pages 自动完成</span>
+            <div class="t-cmd">git commit -m "正式结业：作品完整归档"</div>
+            <div class="t-result">护城星河已成 · 第三章圆满收官</div>
+            <span class="term-tag">示意演示 · GitHub 网页上的 Commit，做的就是这样一件事</span>
           </div>
         </div>
       </div>
@@ -334,9 +320,9 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
   <!-- 封印凭证 -->
   <section class="seal-panel" id="sealPanel" aria-labelledby="sealTitle">
     <h2 id="sealTitle">封印凭证</h2>
-    <p class="hint" id="sealHint">四块地图都点亮、作品真的上线后，把它的线上网址贴在这里，领取魔力值。网址形如：你的用户名.github.io/仓库名/</p>
+    <p class="hint" id="sealHint">护城星河汇成、作品归档好后，把仓库链接贴在这里，领取魔力值并晋升称号。链接形如：github.com/你的用户名/仓库名</p>
     <div class="paste-row">
-      <input type="url" id="siteUrl" placeholder="https://你的用户名.github.io/仓库名/" aria-label="你的线上作品网址" autocomplete="off" spellcheck="false">
+      <input type="url" id="repoUrl" placeholder="https://github.com/你的用户名/仓库名" aria-label="你的仓库链接" autocomplete="off" spellcheck="false">
       <button class="btn btn-gold" id="sealBtn" disabled>验看封印 · 领取魔力值</button>
     </div>
     <p class="paste-msg" id="pasteMsg" aria-live="polite"></p>
@@ -344,23 +330,23 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 
   <!-- LEVEL UP -->
   <section class="levelup" id="levelup" hidden aria-labelledby="luTitle">
-    <div class="lu-head" id="luTitle">✦ 第二章 · 造物课 · 首关通过</div>
-    <div class="lu-xp" id="luXp">魔力值 +240</div>
+    <div class="lu-head" id="luTitle">✦ 第三章 · 黑魔法防御课 · 结业</div>
+    <div class="lu-xp" id="luXp">魔力值 +480</div>
     <div class="rank-card">
       <span class="rank-badge" aria-hidden="true">✦</span>
       <div>
-        <div class="rank-name" id="rankName">称号维持 · 施咒学徒</div>
-        <div class="rank-note" id="rankNote">第二章未完 · 下一个里程碑「除咒师」在黑魔法防御课结业（第三章收官）</div>
+        <div class="rank-name" id="rankName">除咒师</div>
+        <div class="rank-note" id="rankNote">第三章结业 · 你能让作品既强壮又可回溯 · 下一称号「卷轴管理员」</div>
       </div>
     </div>
-    <div class="share-label">你的第一件作品现在真的在网上。把线上地址发给朋友：</div>
+    <div class="share-label">你的第一座完整防御体系落成了。把仓库链接发给朋友，看看守护它的星河：</div>
     <div class="share-row">
-      <input type="text" id="shareUrl" readonly aria-label="你的线上作品地址">
+      <input type="text" id="shareUrl" readonly aria-label="你的仓库链接">
       <button class="copy-btn" id="copyBtn">复制链接</button>
     </div>
-    <div class="share-note">这是一条真实的线上地址 · 全世界都能打开 · 它就是你从零做的第一件作品</div>
+    <div class="share-note">一件你敢于不断试新、却永远稳得住的作品</div>
     <div class="lu-actions">
-      <a class="btn btn-gold" href="index.html#map">看看下一关是什么</a>
+      <a class="btn btn-gold" href="index.html#map">看看下一章是什么</a>
       <a class="btn btn-ghost" href="index.html">回学院大门</a>
     </div>
   </section>
@@ -382,7 +368,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
       return {
         xp: Number(p.xp) || 0, streak: Number(p.streak) || 0,
         lastDay: String(p.lastDay || ""),
-        level0Done: !!p.level0Done, level1Done: !!p.level1Done, level2Done: !!p.level2Done, level3Done: !!p.level3Done, level4Done: !!p.level4Done,
+        level0Done: !!p.level0Done, level1Done: !!p.level1Done, level2Done: !!p.level2Done, level3Done: !!p.level3Done, level4Done: !!p.level4Done, level5Done: !!p.level5Done, level6Done: !!p.level6Done, level7Done: !!p.level7Done, level8Done: !!p.level8Done, level9Done: !!p.level9Done, level10Done: !!p.level10Done, level11Done: !!p.level11Done, level12Done: !!p.level12Done,
         title: String(p.title || ""), repoUrl: String(p.repoUrl || ""), siteUrl: String(p.siteUrl || "")
       };
     } catch (e) { return null; }
@@ -399,8 +385,8 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
   var taskRoad = document.getElementById("taskRoad");
   var startBtn = document.getElementById("startBtn");
 
-  /* ---------- locked out (need level3) ---------- */
-  if (!prog || !prog.level3Done) {
+  /* ---------- locked out (need level11) ---------- */
+  if (!prog || !prog.level11Done) {
     heroSection.hidden = true;
     taskRoad.hidden = true;
     document.getElementById("sealPanel").hidden = true;
@@ -408,38 +394,37 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     return;
   }
 
-  /* ---------- map light ---------- */
-  function lightRegion(n, flash) {
-    var r = document.getElementById("reg"+n);
-    r.classList.add("on");
-    if (flash && !reduce) {
-      r.classList.add("glow");
-      setTimeout(function () { r.classList.remove("glow"); }, 900);
+  /* ---------- light river ---------- */
+  function lightRiver(n) {
+    for (var i = 1; i <= 3; i++) {
+      var t = document.getElementById("t"+i);
+      if (i <= n) t.classList.add("on"); else t.classList.remove("on");
     }
+    var main = document.getElementById("mainRiver");
+    if (n >= 4) main.classList.add("on"); else main.classList.remove("on");
   }
 
   /* ---------- returning graduate ---------- */
-  if (prog.level4Done && (prog.siteUrl || prog.repoUrl)) {
+  if (prog.level12Done && (prog.repoUrl || prog.siteUrl)) {
     document.getElementById("levelup").hidden = false;
     document.getElementById("luXp").textContent = "魔力值 " + prog.xp + " · 连击 ×" + prog.streak;
-    document.getElementById("rankNote").textContent = "第二章已通过首关 · 第 5 关见";
-    var su = document.getElementById("shareUrl");
-    su.value = prog.siteUrl || prog.repoUrl;
-    document.getElementById("copyBtn").classList.add("on");
-    ["1","2","3","4"].forEach(function (n) { lightRegion(n, false); });
+    document.getElementById("shareUrl").value = prog.repoUrl || prog.siteUrl;
+    lightRiver(4);
     ["1","2","3","4"].forEach(function (n) {
       var el = document.getElementById("step"+n);
       el.classList.remove("locked"); el.classList.add("sealed");
-      el.querySelector(".js-dispatch").style.display = "none";
-      el.querySelector(".js-return").hidden = true;
+      var d = el.querySelector(".js-dispatch");
+      if (d) d.style.display = "none";
+      var r = el.querySelector(".js-return");
+      if (r) r.hidden = true;
     });
-    startBtn.textContent = "再访地图 · 四块已亮";
+    startBtn.textContent = "再看一眼 · 星河已在";
     startBtn.addEventListener("click", function () {
       document.getElementById("levelup").scrollIntoView({ behavior: reduce?"auto":"smooth", block:"center" });
     });
     document.getElementById("sealPanel").classList.add("open");
-    var si = document.getElementById("siteUrl");
-    si.value = prog.siteUrl || prog.repoUrl; si.readOnly = true;
+    var ri = document.getElementById("repoUrl");
+    ri.value = prog.repoUrl || prog.siteUrl; ri.readOnly = true;
     var sb = document.getElementById("sealBtn");
     sb.disabled = true; sb.textContent = "已入账";
     return;
@@ -457,8 +442,10 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     var el = steps[n];
     el.classList.remove("locked"); el.classList.add("active");
     setS(n, "待命");
-    el.querySelector(".js-return").hidden = true;
-    el.querySelector(".js-dispatch").style.display = "";
+    var d = el.querySelector(".js-dispatch");
+    if (d) d.style.display = "";
+    var r = el.querySelector(".js-return");
+    if (r) r.hidden = true;
   }
   function dispatch(n) {
     var el = steps[n];
@@ -471,16 +458,17 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
   function seal(n) {
     var el = steps[n];
     el.classList.remove("active","away"); el.classList.add("sealed");
-    setS(n, n==="4" ? "作品已上线 ✓" : "已钤印 ✓");
-    el.querySelector(".js-return").hidden = true;
-    lightRegion(Number(n), true);
+    setS(n, "已点亮 ✓");
+    var d = el.querySelector(".js-return");
+    if (d) d.hidden = true;
+    lightRiver(Number(n));
   }
 
   function openSeal() {
     var panel = document.getElementById("sealPanel");
     panel.classList.add("open");
     var btn = document.getElementById("sealBtn");
-    var inp = document.getElementById("siteUrl");
+    var inp = document.getElementById("repoUrl");
     btn.disabled = inp.value.trim().length === 0;
     inp.focus({ preventScroll: true });
   }
@@ -492,8 +480,10 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
   });
 
   ["1","2","3","4"].forEach(function (n) {
-    steps[n].querySelector(".js-dispatch").addEventListener("click", function () { dispatch(n); });
-    steps[n].querySelector(".js-return").addEventListener("click", function () {
+    var d = steps[n].querySelector(".js-dispatch");
+    var r = steps[n].querySelector(".js-return");
+    if (d) d.addEventListener("click", function () { dispatch(n); });
+    r.addEventListener("click", function () {
       seal(n);
       var next = Number(n) + 1;
       if (next <= 4) {
@@ -506,32 +496,32 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     });
   });
 
-  /* ---------- seal ---------- */
+  /* ---------- seal (repo url) ---------- */
   var sealBtn = document.getElementById("sealBtn");
-  var urlInput = document.getElementById("siteUrl");
+  var repoInput = document.getElementById("repoUrl");
   var pasteMsg = document.getElementById("pasteMsg");
-  var URL_RE = /^https?:\/\/([\w.-]+\.)*[\w-]+\.(io|com|dev|app|net|org|github\.io|pages\.dev)[/:\w.-]*/i;
+  var REPO_RE = /^https?:\/\/(www\.)?github\.com\/[\w.-]+\/[\w.-]+[\/]?$/i;
 
-  urlInput.addEventListener("input", function () {
+  repoInput.addEventListener("input", function () {
     pasteMsg.textContent = ""; pasteMsg.className = "paste-msg";
-    sealBtn.disabled = urlInput.value.trim().length === 0;
+    sealBtn.disabled = repoInput.value.trim().length === 0;
   });
 
   sealBtn.addEventListener("click", function () {
-    var url = urlInput.value.trim();
-    if (!URL_RE.test(url)) {
-      pasteMsg.textContent = "这看起来不像一个线上网址——应形如 你的用户名.github.io/仓库名/";
+    var url = repoInput.value.trim();
+    if (!REPO_RE.test(url)) {
+      pasteMsg.textContent = "这看起来不像一个 GitHub 仓库地址——应形如 github.com/你的用户名/仓库名";
       pasteMsg.className = "paste-msg err";
       return;
     }
-    pasteMsg.textContent = "显形确认 ✓";
+    pasteMsg.textContent = "封印确认 ✓";
     pasteMsg.className = "paste-msg ok";
 
-    var p = load() || { xp:0,streak:0,lastDay:"",level0Done:false,level1Done:false,level2Done:false,level3Done:false,level4Done:false,title:"",repoUrl:"",siteUrl:"" };
-    var firstTime = !p.level4Done;
+    var p = load() || { xp:0,streak:0,lastDay:"",level0Done:false,level1Done:false,level2Done:false,level3Done:false,level4Done:false,level5Done:false,level6Done:false,level7Done:false,level8Done:false,level9Done:false,level10Done:false,level11Done:false,level12Done:false,title:"",repoUrl:"",siteUrl:"" };
+    var firstTime = !p.level12Done;
     var gainedXp = false;
-    if (firstTime) { p.level4Done = true; p.xp += 240; gainedXp = true; }
-    p.siteUrl = url;
+    if (firstTime) { p.level12Done = true; p.xp += 480; gainedXp = true; p.title = "除咒师"; }
+    p.repoUrl = url;
     var td = today();
     if (gainedXp) {
       if (p.lastDay !== td) {
@@ -549,14 +539,13 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     var lu = document.getElementById("levelup");
     lu.hidden = false;
     if (firstTime) {
-      document.getElementById("luXp").textContent = "魔力值 +240";
+      document.getElementById("luXp").textContent = "魔力值 +480";
     } else {
       document.getElementById("luXp").textContent = "魔力值 " + p.xp + " · 连击 ×" + p.streak;
-      document.getElementById("rankNote").textContent = "第二章已通过首关 · 第 5 关见";
     }
     document.getElementById("shareUrl").value = url;
     sealBtn.disabled = true; sealBtn.textContent = "已入账";
-    urlInput.readOnly = true;
+    repoInput.readOnly = true;
     if (reduce) lu.scrollIntoView({ block:"center" }); else lu.scrollIntoView({ behavior:"smooth", block:"center" });
   });
 
@@ -572,5 +561,4 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 })();
 </script>
 
-</body>
 </html>
